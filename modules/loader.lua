@@ -1,18 +1,19 @@
+local M = {};
+
 dSLP = 60
-aNTP = "pool.ntp.org"
 
 loadList = "update_list"
 fmwTool = "fmw.lua"
-fmwAddr = ""
+
 fmwMod = nil
 fmwVer = nil
 
-function deepSl()
+function M.deepSl()
   print("deepSl")
   rtctime.dsleep(dSLP*1000000)
 end
 
-function OKCh(unix)
+function M.OKCh(unix)
   if fmwMod ~= nil then
     file.open(EspId, "w")
     file.write(fmwMod)
@@ -30,45 +31,29 @@ function OKCh(unix)
     file.close()
   end
   print('firmware is updated, restarting...')
-  rtctime.dsleep(0)
+  node.restart()
+--  rtctime.dsleep(0)
 end
 
-function loadUpdate()
+function M.loadUpdate(fmwAddrUrl)
   local fl = require("fl")
   local pti,ptj = string.find(fmwTool,'%.')
   local fmwpack = string.sub(fmwTool, 1, pti-1)
   local fmw = require(fmwpack)
   local function syncTime()
-    sntp.sync(aNTP,function(unix) OKCh(unix) end,function() OKCh() end)
+    sntp.sync(aNTP,function(unix) M.OKCh(unix) end,function() M.OKCh() end)
   end
-  fmw.update(loadList,fmwAddr,function(err)
+  fmw.update(loadList,fmwAddrUrl,function(err)
     package.loaded[fmwpack] = nil
     if err ~= nil then
-      print('??? firmware update error:',err)
+      print("??? firmware update error:'"..err.."'")
       return
     end
-    if file.exists('_xLOG') then
-      fl.sendlog('_xLOG',fmwAddr..'log', function(err)
-        if (err) then
-          print('_xLOG was not sent')
-        end
-        if file.exists('_LOG') then
-          fl.sendlog('_LOG',fmwAddr..'log', function(err)
-            if (err) then
-              print('_LOG was not sent')
-            end
-            syncTime()
-          end)
-        else
-          syncTime()
-        end
-      end)
-    else
-      syncTime()
-    end
+    syncTime()
   end)
 end
 
 
 -- ===============================================
-loadUpdate()
+
+return M

@@ -5,6 +5,7 @@ _G[moduleName] = M
 function M.update(ufile,uaddr,cbU)
   local reqType = (LoadMode == 'init') and 'load' or 'update'
   local url = uaddr..ufile.."?tagId="..EspId.."&reqType="..reqType
+  print("url:'"..url.."'")
   file.remove(ufile)
   fl.download(ufile,url,function(err)
     if nil ~= err or nil == file.open(ufile) then

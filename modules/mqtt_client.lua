@@ -5,14 +5,27 @@ AUTORECONNECT = 1
 INSECURE = 0
 MQTT_PORT = 1883
 
+QOS_0 = 0
 QOS_2 = 2
+NO_RETAIN = 0
 RETAIN = 1
 
 local mqttClientObj
 local brokerIp
 --local currentlyMonitoredTopic
+local onMessageCallback=function(c,t,m)
+    print("callback placeholder. topic:"..t..",msg:"..m)
+end
 
-function M.init(mqttBrokerIp, onMessageCallback)
+function M.log(m)
+    mqttClientObj:publish(EspId.."/log", m, QOS_0, NO_RETAIN)
+end
+
+function M.setCallback(cb)
+    onMessageCallback=cb
+end
+
+function M.init(mqttBrokerIp)
     brokerIp = mqttBrokerIp
     mqttClientObj = mqtt.Client(EspId, 120)
     mqttClientObj:lwt(EspId.."/status", "{\"mac\":\""..EspId.."\", \"status\":\"offline\"}", QOS_2, RETAIN)
@@ -21,11 +34,20 @@ function M.init(mqttBrokerIp, onMessageCallback)
         print("MQTT Went offline. Reconnecting...")
         M.reconnectMqtt()
     end)
-    mqttClientObj:on("message", onMessageCallback)
+--    mqttClientObj:on("message", onMessageCallback)
     mqttClientObj:on("message", function(client, topic, message)
         if(topic==EspId.."/sys") then
             print("Got system message '"..message.."' on topic "..topic)
-
+            local msgObj = cjson.decode(message)
+            if(msgObj['cmd']=="update") then
+                print("command:"..msgObj['cmd']..", url:"..msgObj['url'])
+--                tmr.alarm(0, 100, 0, function()
+                local loader = require("loader")
+                loader.loadUpdate(msgObj['url'])
+--                end)
+            else
+                print("unknown command")
+            end
         else
             onMessageCallback(client, topic, message)
         end

@@ -3,6 +3,7 @@ local M = {}
 _G[moduleName] = M
 
 function M.download(filename,url,cbL)
+  print("download start for "..filename)
   local hdr,flopn,flerr,isTrunc = '',false,false,false
   local function fsave(res)
     if isTrunc then
@@ -21,7 +22,7 @@ function M.download(filename,url,cbL)
     return
   end
   local ip,port,path = string.gmatch(url,'http://([0-9.]+):?([0-9]*)(/.*)')()
-  local sk = net.createConnection(net.TCP,false)
+  local sk = net.createConnection(net.TCP,0)
   sk:connect(port,ip)
   sk:on('connection', function(sk)
     print('...connection:',filename)
