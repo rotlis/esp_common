@@ -25,12 +25,10 @@ function M.OKCh(unix)
     file.close()
   end
   if unix ~= nil then
-    print('time is syncronized and saved...')
-    file.open("_TIME", "w")
-    file.write(unix)
-    file.close()
+    rtctime.set(unix, 0)
+    LOGGER.log('time is syncronized and saved...')
   end
-  print('firmware is updated, restarting...')
+  LOGGER.log('firmware is updated, restarting...')
   node.restart()
 --  rtctime.dsleep(0)
 end
@@ -46,9 +44,10 @@ function M.loadUpdate(fmwAddrUrl)
   fmw.update(loadList,fmwAddrUrl,function(err)
     package.loaded[fmwpack] = nil
     if err ~= nil then
-      print("??? firmware update error:'"..err.."'")
+      LOGGER.log("??? firmware update error:'"..err.."'")
       return
     end
+    LOGGER.log("Updated. Syncing time..")
     syncTime()
   end)
 end

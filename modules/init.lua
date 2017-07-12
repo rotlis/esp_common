@@ -5,9 +5,26 @@ wifi.setmode(wifi.STATION)
 wifi.sta.connect()
 
 EspId = string.gsub(wifi.sta.getmac(), ':', '');
+
+FIRMWARE_NAME="Unknown"
+FIRMWARE_VERSION="NA"
+if file.open(EspId) ~= nil then
+    FIRMWARE_NAME = file.read()
+    file.close()
+end
+if file.open("_VER") ~= nil then
+    FIRMWARE_VERSION = file.read()
+    file.close()
+end
+
+
 local properties = require("properties")
+LOGGER = require("logger")
 mqttClient = require("mqtt_client")
 mqttClient.init(MQTT_BROKER_IP)
+
+
+--mdns.register("fishtank", {hardware='NodeMCU'})
 
 FileToExecute="start.lua"
 l = file.list();

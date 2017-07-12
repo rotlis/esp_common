@@ -17,10 +17,6 @@ local onMessageCallback=function(c,t,m)
     print("callback placeholder. topic:"..t..",msg:"..m)
 end
 
-function M.log(m)
-    mqttClientObj:publish(EspId.."/log", m, QOS_0, NO_RETAIN)
-end
-
 function M.setCallback(cb)
     onMessageCallback=cb
 end
@@ -34,23 +30,25 @@ function M.init(mqttBrokerIp)
         print("MQTT Went offline. Reconnecting...")
         M.reconnectMqtt()
     end)
---    mqttClientObj:on("message", onMessageCallback)
+
     mqttClientObj:on("message", function(client, topic, message)
         if(topic==EspId.."/sys") then
             print("Got system message '"..message.."' on topic "..topic)
             local msgObj = cjson.decode(message)
             if(msgObj['cmd']=="update") then
                 print("command:"..msgObj['cmd']..", url:"..msgObj['url'])
---                tmr.alarm(0, 100, 0, function()
-                local loader = require("loader")
-                loader.loadUpdate(msgObj['url'])
---                end)
+                require("loader").loadUpdate(msgObj['url'])
+            elseif(msgObj['cmd']=="restart") then
+                node.restart()
             else
-                print("unknown command")
+                LOGGER.log("unknown command")
             end
         else
             onMessageCallback(client, topic, message)
         end
+    end)
+    LOGGER.addAppender(function(m)
+        mqttClientObj:publish(EspId.."/log", EspId..":"..m, QOS_0, NO_RETAIN)
     end)
     M.reconnectMqtt()
 end
@@ -82,7 +80,7 @@ function M.reconnectMqtt()
             print("MQTT Connected to " .. brokerIp)
 
             mqttClientObj:subscribe({[EspId.."/cmd"]=2,[EspId.."/sys"]=2}, function(client)
-                mqttClientObj:publish(EspId.."/status", "{\"mac\":\""..EspId.."\", \"status\":\"online\"}", QOS_2, RETAIN)
+                mqttClientObj:publish(EspId.."/status", "{\"mac\":\""..EspId.."\", \"status\":\"online\", \"firmware\":\""..FIRMWARE_NAME.."\", \"version\":\""..FIRMWARE_VERSION.."\"}", QOS_2, RETAIN)
             end)
         end,
             function(client, reason)
