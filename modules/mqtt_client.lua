@@ -1,7 +1,7 @@
 local M = {};
 
 SEC = 1000
-AUTORECONNECT = 1
+NO_AUTORECONNECT = 0
 INSECURE = 0
 MQTT_PORT = 1883
 
@@ -76,7 +76,7 @@ function M.reconnectMqtt()
     print("Waiting for Wifi")
     if wifi.sta.status() == 5 and wifi.sta.getip() ~= nil then
         print("Wifi connected")
-        mqttClientObj:connect(brokerIp, MQTT_PORT, INSECURE, AUTORECONNECT, function(client)
+        mqttClientObj:connect(brokerIp, MQTT_PORT, INSECURE, NO_AUTORECONNECT, function(client)
             print("MQTT Connected to " .. brokerIp)
 
             mqttClientObj:subscribe({[EspId.."/cmd"]=2,[EspId.."/sys"]=2}, function(client)
