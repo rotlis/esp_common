@@ -8,52 +8,56 @@ local known_networks={
     {ssid='innovate',pwd='',auto=true}
 }
 
-function M.scan(cb)
-    wifi.sta.getap(function(t)
-        if nil ~= next(t) then
-           bestRsi = -99
-           bestNetwork = nil
-           for ssid,v in pairs(t) do
-             wp,sg,mc,ch = string.match(v, '(.+),(.+),(.+),(.+)')
-             sg = tonumber(sg)
---             if sg == nil or sg < -99 then
---               sg = -99
---             end
+local wf_timer = tmr.create()
+function M.startScan()
+    wf_timer:register(10000, tmr.ALARM_AUTO, function()
+        wifi.sta.getap(function(t)
+            if nil ~= next(t) then
+               bestRsi = -99
+               bestNetwork = nil
+               for ssid,v in pairs(t) do
+                 wp,sg,mc,ch = string.match(v, '(.+),(.+),(.+),(.+)')
+                 sg = tonumber(sg)
+    --             if sg == nil or sg < -99 then
+    --               sg = -99
+    --             end
 
-             for _,network in pairs(known_networks) do
-                if ssid == network['ssid'] then
-                     print(ssid.."|"..sg)
-                    if sg > bestRsi then
-                        bestRsi=sg
-                        bestNetwork = network
+                 for _,network in pairs(known_networks) do
+                    if ssid == network['ssid'] then
+                         print(ssid.."|"..sg)
+                        if sg > bestRsi then
+                            bestRsi=sg
+                            bestNetwork = network
+                        end
                     end
-                end
-             end
-           end --for
+                 end
+               end --for
 
 
-          if (bestNetwork~=nil) then
-             print("best network:"..bestNetwork['ssid'])
-             if wifi.sta.status() == wifi.STA_GOTIP and wifi.sta.getip() ~= nil then
-                 local currIp,nm=wifi.sta.getip()
-                 local curr_sta_config=wifi.sta.getconfig(true)
-                 local currRsi=wifi.sta.getrssi()
-                 print("currently connected to:"..curr_sta_config.ssid.." with rsi:"..currRsi.." ip:"..currIp)
-                 if curr_sta_config.ssid~=bestNetwork['ssid'] and bestRsi>(currRsi+10) then
-                    print("$$$$$ reconnecting to better network..")
+              if (bestNetwork~=nil) then
+                 print("best network:"..bestNetwork['ssid'])
+                 if wifi.sta.status() == wifi.STA_GOTIP and wifi.sta.getip() ~= nil then
+                     local currIp,nm=wifi.sta.getip()
+                     local curr_sta_config=wifi.sta.getconfig(true)
+                     local currRsi=wifi.sta.getrssi()
+                     print("currently connected to:"..curr_sta_config.ssid.." with rsi:"..currRsi.." ip:"..currIp)
+                     if curr_sta_config.ssid~=bestNetwork['ssid'] and bestRsi>(currRsi+10) then
+                        print("$$$$$ reconnecting to better network..")
+                        wifi.sta.config(bestNetwork)
+                     end
+                 else
+                    print("@@@@@ not connected yet anywhere. Connecting..")
+
                     wifi.sta.config(bestNetwork)
                  end
-             else
-                print("@@@@@ not connected yet anywhere. Connecting..")
 
-                wifi.sta.config(bestNetwork)
-             end
-
-          else
-             print("No known networks found")
-          end
-        end
+              else
+                 print("No known networks found")
+              end
+            end
+        end)
     end)
+    wf_timer:start()
 end
 
 

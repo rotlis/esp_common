@@ -12,6 +12,7 @@ RETAIN = 1
 
 local mqttClientObj
 local brokerIp
+local mqtt_timer = tmr.create()
 --local currentlyMonitoredTopic
 local onMessageCallback=function(c,t,m)
     print("callback placeholder. topic:"..t..",msg:"..m)
@@ -74,7 +75,7 @@ end
 
 function M.reconnectMqtt()
     print("Waiting for Wifi")
-    if wifi.sta.status() == 5 and wifi.sta.getip() ~= nil then
+    if wifi.sta.status() == wifi.STA_GOTIP and wifi.sta.getip() ~= nil then
         print("Wifi connected")
         mqttClientObj:connect(brokerIp, MQTT_PORT, INSECURE, NO_AUTORECONNECT, function(client)
             print("MQTT Connected to " .. brokerIp)
@@ -88,9 +89,10 @@ function M.reconnectMqtt()
                 M.reconnectMqtt()
             end)
     else
-        tmr.alarm(0, 1000, 0, function()
+        mqtt_timer:register(1000, tmr.ALARM_SINGLE, function()
             M.reconnectMqtt()
         end)
+        mqtt_timer:start()
     end
 end
 
