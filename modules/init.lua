@@ -18,26 +18,21 @@ if file.open("_VER") ~= nil then
 end
 
 
-local properties = require("properties")
-require("wf").startScan()
-LOGGER = require("logger")
-mqttClient = require("mqtt_client")
-mqttClient.init(MQTT_BROKER_IP)
+print("*** You've got 3 sec to stop timer 0 (e.g. tmr.stop(0))***")
 
+tmr.alarm(0,3000,0, function()
+    local properties = require("properties")
+    require("wf").startScan()
+    LOGGER = require("logger")
+    mqttClient = require("mqtt_client")
+    mqttClient.init(MQTT_BROKER_IP)
+    --mdns.register("fishtank", {hardware='NodeMCU'})
 
---mdns.register("fishtank", {hardware='NodeMCU'})
-
-FileToExecute="start.lua"
-l = file.list();
-for k,v in pairs(l) do
-    if k == FileToExecute then
-        print("*** You've got 3 sec to stop timer 0 (e.g. tmr.stop(0))***")
-        tmr.alarm(0, 3000, 0, function()
-
-
-            print("Executing ".. FileToExecute)
-            dofile(FileToExecute)
-        end)
+    if file.exists("start.lua") then
+        print("Executing start.lua")
+        dofile("start.lua")
+    else
+        print("No start.lua found")
     end
-end
 
+end)
