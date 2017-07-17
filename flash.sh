@@ -7,7 +7,7 @@ BLUE='\033[1;34m'
 BGREEN='\033[1;32m'
 NC='\033[0m' # No Color
 
-BIN_FOLDER='/Users/robertsayfullin/apps/esptool/esptool-master/'
+BIN_FOLDER='/Users/robertsayfullin/apps/esptool/esptool-master'
 toggleName=$1
 
 devOps=$(ls /dev/tty* | grep -i 'usb')
@@ -32,8 +32,8 @@ done;
 echo $device
 echo $binary
 
-
-python $BIN_FOLDER/esptool.py -p $device write_flash --flash_mode dio -fs 32m 0x00000 $BIN_FOLDER/$binary
+echo python2.7 $BIN_FOLDER/esptool.py -p $device write_flash --flash_mode dio -fs 32m 0x00000 $BIN_FOLDER/$binary
+python2.7 $BIN_FOLDER/esptool.py -p $device write_flash --flash_mode dio -fs 32m 0x00000 $BIN_FOLDER/$binary
 
 #python esptool.py -p /dev/tty.SLAB_USBtoUART write_flash  --flash_mode dio -fs 32m 0x00000 _nunchuck_ws.bin
 
