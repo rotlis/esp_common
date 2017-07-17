@@ -1,23 +1,24 @@
 local M = {};
 
 local lastPos=0
+local stepSensitivity=4
 
 function M.init(channel, pinA, pinB, pinPress, rotateCB, pressCB)
     rotary.setup(channel, pinA,pinB, pinPress)
-    lastPos=rotary.getpos(0)/4
+    lastPos=rotary.getpos(0)
 --    rotary.setup(0, 5,6, 7)
 
     rotary.on(0, rotary.TURN, function (type, pos, when)
       --print("Position=" .. pos .. " event type=" .. type .. " time=" .. when)
-      local newPos =  pos/4
+      local newPos =  pos
       local shift=0
-      if newPos > lastPos then
+      if newPos >= lastPos+stepSensitivity then
         shift=-1
-      elseif newPos < lastPos then
+        lastPos=newPos
+      elseif newPos <= lastPos-stepSensitivity then
         shift=1
+        lastPos=newPos
       end
-      --print(lastPos, newPos, shift)
-      lastPos=newPos
       if shift~=0 then
         return rotateCB(shift)
       end
