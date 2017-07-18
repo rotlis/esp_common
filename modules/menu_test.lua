@@ -5,7 +5,7 @@ menu.setstruct({
         {label='..'},
         {
             { label = '..' },
-            label = 'info',
+            label = 'Info',
             items = {
                 { label = '..' },
                 { label = 'Battery', type='inline_func', eval='adc.read(0)' },
@@ -14,26 +14,26 @@ menu.setstruct({
             }
         }, {
             --2
-            label = 'control',
+            label = 'Control',
             items = {
                 { label = '..' },
-                { label = 'Power', type='enum', values={'On', 'Off'} },
+                { label = 'Power', type='toggle', labels={'On', 'Off'},  value=false},
                 { label = 'Polarity', type='enum', values={'forward', 'reverse'} },
                 { label = 'Reboot', type='func', eval='node.restart()' }
             }
         }, {
             --3
-            label = 'settings',
+            label = 'Settings',
             items = {
                 { label = '..' },
                 {
-                    label = 'electrical',
+                    label = 'Electrical',
                     items = {
                         { label = '..' },
-                        { label = 'intensity', type='range', min=1, max=10, increment=1 },
-                        { label = 'LowBat', type='range', min=11, max=14, increment=1 },
-                        { label = 'HighBat', type='range', min=11, max=14, increment=1 },
-                        { label = 'PowerCycle', type='range', min=1, max=600, increment=1  }
+                        { label = 'Intensity', type='range', min=1, max=10, increment=1, value=1 },
+                        { label = 'LowBat', type='range', min=11, max=14, increment=1, value=11 },
+                        { label = 'HighBat', type='range', min=11, max=14, increment=1, value=11 },
+                        { label = 'PowerCycle', type='range', min=1, max=600, increment=10, value=1  }
                     }
                 },
                 {
