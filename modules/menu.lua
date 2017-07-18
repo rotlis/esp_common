@@ -36,10 +36,19 @@ function M.showMenu(path)
 
     --show in OLED
     disp:firstPage()
+    local lines={}
+    for itn, itv in pairs(menu_page.items) do
+        local line=(itn==curLinePos and '>' or ' ') .. itv.label
+        if itv.type=='inline_func' then
+            line=line..' '..loadstring('return '..itv.eval)()
+        end
+        table.insert(lines, line)
+    end
+
+    disp:drawStr(0, 0, '@'..(menu_page.label~=nil and menu_page.label or 'MENU'))
     repeat
-        disp:drawStr(0, 0, '@'..(menu_page.label~=nil and menu_page.label or 'MENU'))
-        for itn, itv in pairs(menu_page.items) do
-            disp:drawStr(1, itn*10+6, (itn==curLinePos and '>' or '') .. itv.label)
+        for itn, line in pairs(lines) do
+            disp:drawStr(1, itn*10+6, line)
         end
 
     until disp:nextPage() == false
@@ -68,10 +77,12 @@ myrotary.init(0,5,6,7,
                 curLinePos = table.remove(path)
             end
         elseif (menu_page.items[curLinePos].type==nil) then
-                path[#path + 1] = curLinePos
-                curLinePos = 1
+            path[#path + 1] = curLinePos
+            curLinePos = 1
+        elseif (menu_page.items[curLinePos].type=='func') then
+            loadstring(menu_page.items[curLinePos].eval)()
         else
-                print('Function-----------------')
+
         end
         M.showMenu(path)
     end

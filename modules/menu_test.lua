@@ -8,9 +8,9 @@ menu.setstruct({
             label = 'info',
             items = {
                 { label = '..' },
-                { label = 'Battery voltage', type='func', value=todo },
-                { label = 'Free Memory', type='func', value=todo },
-                { label = 'Tick', type='func', value=todo }
+                { label = 'Battery', type='inline_func', eval='adc.read(0)' },
+                { label = 'Heap', type='inline_func', eval='node.heap()' },
+                { label = 'Tick', type='inline_func', eval='tmr.now()' }
             }
         }, {
             --2
@@ -18,7 +18,8 @@ menu.setstruct({
             items = {
                 { label = '..' },
                 { label = 'Power', type='enum', values={'On', 'Off'} },
-                { label = 'Polarity', type='enum', values={'forward', 'reverse'} }
+                { label = 'Polarity', type='enum', values={'forward', 'reverse'} },
+                { label = 'Reboot', type='func', eval='node.restart()' }
             }
         }, {
             --3
