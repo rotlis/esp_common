@@ -17,8 +17,8 @@ menu.setstruct({
             label = 'Control',
             items = {
                 { label = '..' },
-                { label = 'Power', type='toggle', labels={'On', 'Off'},  value=false},
-                { label = 'Polarity', type='enum', values={'forward', 'reverse'} },
+                { label = 'Power', type='toggle', value=false},
+                { label = 'Polarity', type='toggle', labels={'forward', 'reverse'}, value=true },
                 { label = 'Reboot', type='func', eval='node.restart()' }
             }
         }, {
@@ -30,10 +30,10 @@ menu.setstruct({
                     label = 'Electrical',
                     items = {
                         { label = '..' },
-                        { label = 'Intensity', type='range', min=1, max=10, increment=1, value=1 },
-                        { label = 'LowBat', type='range', min=11, max=14, increment=1, value=11 },
-                        { label = 'HighBat', type='range', min=11, max=14, increment=1, value=11 },
-                        { label = 'PowerCycle', type='range', min=1, max=600, increment=10, value=1  }
+                        { label = 'Intensity', type='range', min=0, max=10, increment=2, value=4 },
+                        { label = 'LowBat', type='range', min=11, max=14,  value=11 },
+                        { label = 'HighBat', type='range', min=11, max=14,  value=11 },
+                        { label = 'PowerCycle', type='range', min=0, max=600, increment=10, value=0  }
                     }
                 },
                 {
@@ -42,8 +42,8 @@ menu.setstruct({
                         { label = '..' },
                         { label = 'SSID' , type='string'},
                         { label = 'Pswd' , type='string'},
-                        { label = 'b/g/n' , type='enum', values={'b', 'g', 'n'}},
-                        { label = 'channel', type='range', min=1, max=14 }
+                        { label = 'b/g/n' , type='enum', values={'b', 'g', 'n'}, value=''},
+                        { label = 'channel', type='range', min=1, max=14, value=1}
                     }
                 },
                 {

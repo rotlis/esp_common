@@ -43,7 +43,12 @@ function M.showMenu(path)
             line=line..': '..loadstring('return '..itv.eval)()
         end
         if itv.value~=nil then
-            line=line..': '..tostring(itv.value)
+            if itv.type=='toggle' and itv.labels~=nil then
+                print('itv.value', itv.value)
+                line=line..': '..(itv.value and itv.labels[1] or itv.labels[2])
+            else
+                line=line..': '..tostring(itv.value)
+            end
         end
         table.insert(lines, line)
     end
@@ -75,9 +80,8 @@ end
 
 function M.menuItemShift(shift)
     local menuItem=menu_page.items[curLinePos]
-    print('menu item shift')
     if (menuItem.type=='range') then
-        menuItem.value=menuItem.value+(shift*menuItem.increment)
+        menuItem.value=menuItem.value+(shift*(menuItem.increment~=nil and menuItem.increment or 1) )
         menuItem.value=math.min(menuItem.value,menuItem.max)
         menuItem.value=math.max(menuItem.value,menuItem.min)
 --    elseif (menuItem.type=='toggle') then
@@ -89,22 +93,35 @@ function M.menuItemShift(shift)
 end
 
 function M.navigationClick()
+    local itv=menu_page.items[curLinePos]
     if (curLinePos == 1) then
         if (#path==0) then
             print('exit')
         else
             curLinePos = table.remove(path)
         end
-    elseif (menu_page.items[curLinePos].type==nil) then
+    elseif (itv.type==nil) then
         path[#path + 1] = curLinePos
         curLinePos = 1
-    elseif (menu_page.items[curLinePos].type=='func') then
-        loadstring(menu_page.items[curLinePos].eval)()
-    elseif (menu_page.items[curLinePos].type=='range') then
+    elseif (itv.type=='func') then
+        loadstring(itv.eval)()
+    elseif (itv.type=='range') then
         shiftMode=1
-    elseif (menu_page.items[curLinePos].type=='toggle') then
-        menu_page.items[curLinePos].value = not menu_page.items[curLinePos].value
-
+    elseif (itv.type=='toggle') then
+        itv.value = not itv.value
+    elseif (itv.type=='enum') then
+        for k, v in pairs(itv.values) do
+            if v == itv.value then
+                if k<#itv.values then
+                    itv.value=itv.values[k+1]
+                else
+                    itv.value=itv.values[1]
+                end
+                return
+            end
+        end
+        itv.value = itv.values[1]
+---------------------- here
     else
 
     end
@@ -136,6 +153,8 @@ myrotary.init(0,5,6,7,
 )
 
 M.init_OLED()
+
+-- random helpers
 
 
 return M
