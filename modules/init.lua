@@ -21,7 +21,7 @@ end
 print("*** You've got 3 sec to stop timer 0 (e.g. tmr.stop(0))***")
 
 tmr.alarm(0,3000,0, function()
-    local properties = require("properties")
+    require("properties")
     require("wf").startScan()
     LOGGER = require("logger")
     mqttClient = require("mqtt_client")

@@ -26,6 +26,17 @@ function M.init_OLED() --Set up the u8glib lib
     end
 end
 
+function getPropOrDefault(itv)
+--    print(itv.label)
+    local val = nil
+    if itv.prop~=nil then
+        val = loadstring('return '..itv.prop)()
+    end
+    if val==nil then
+        val = itv.value
+    end
+    return val
+end
 
 function M.showMenu(path)
     --descent
@@ -42,12 +53,13 @@ function M.showMenu(path)
         if itv.type=='inline_func' then
             line=line..': '..loadstring('return '..itv.eval)()
         end
-        if itv.value~=nil then
+        local val = getPropOrDefault(itv)
+        if val~=nil then
             if itv.type=='toggle' and itv.labels~=nil then
-                print('itv.value', itv.value)
-                line=line..': '..(itv.value and itv.labels[1] or itv.labels[2])
+                print('itv.value', val)
+                line=line..': '..(val and itv.labels[1] or itv.labels[2])
             else
-                line=line..': '..tostring(itv.value)
+                line=line..': '..tostring(val)
             end
         end
         table.insert(lines, line)
@@ -58,7 +70,7 @@ function M.showMenu(path)
     disp:drawStr(0, 0, '@'..(menu_page.label~=nil and menu_page.label or 'MENU'))
     repeat
         for itn, line in pairs(lines) do
-            disp:drawStr(1, itn*10+6, line)
+            disp:drawStr(1, itn*10+5, line)
         end
 
     until disp:nextPage() == false
@@ -81,9 +93,11 @@ end
 function M.menuItemShift(shift)
     local menuItem=menu_page.items[curLinePos]
     if (menuItem.type=='range') then
-        menuItem.value=menuItem.value+(shift*(menuItem.increment~=nil and menuItem.increment or 1) )
-        menuItem.value=math.min(menuItem.value,menuItem.max)
-        menuItem.value=math.max(menuItem.value,menuItem.min)
+        local val=getPropOrDefault(menuItem)
+        val=val+(shift*(menuItem.increment~=nil and menuItem.increment or 1) )
+        val=math.min(val,menuItem.max)
+        val=math.max(val,menuItem.min)
+        loadstring(menuItem.prop..'='..val)()
 --    elseif (menuItem.type=='toggle') then
 --        menuItem.value=not menuItem.value
     else
@@ -108,19 +122,31 @@ function M.navigationClick()
     elseif (itv.type=='range') then
         shiftMode=1
     elseif (itv.type=='toggle') then
-        itv.value = not itv.value
+        local val=getPropOrDefault(itv)
+        val = not val
+        loadstring(itv.prop..'='..tostring(val))()
     elseif (itv.type=='enum') then
+        local val=getPropOrDefault(itv)
+        print('enum value', val)
+        local found=false
         for k, v in pairs(itv.values) do
-            if v == itv.value then
+            print('comparing',val, v)
+            if v == val then
+                print('found at '..k)
+                found=true
                 if k<#itv.values then
-                    itv.value=itv.values[k+1]
+                    val=itv.values[k+1]
                 else
-                    itv.value=itv.values[1]
+                    val=itv.values[1]
                 end
-                return
+                break
             end
         end
-        itv.value = itv.values[1]
+        if not found then
+           val = itv.values[1]
+        end
+--        print(itv.prop..'=\''..tostring(val)..'\'')
+        loadstring(itv.prop..'=\''..tostring(val)..'\'')()
 ---------------------- here
     else
 
@@ -129,9 +155,44 @@ function M.navigationClick()
 end
 
 function M.menuItemClick()
-    print("commit value")
     shiftMode=0
 end
+
+function M.loadProps()
+
+end
+
+
+function addFromPage(props, menuPage)
+    for _, item in pairs(menuPage.items) do
+        if item.prop~=nil and item.transient~=true then
+            if item.type=='range' or item.type=='toggle' then
+                table.insert(props, item.prop..'='..tostring(item.value))
+            else
+                table.insert(props, item.prop..'=\''..item.value..'\'')
+            end
+
+        elseif item.items~=nil then
+            addFromPage(props, item)
+        else
+
+        end
+    end
+end
+
+function M.saveProps()
+    local props = {}
+    addFromPage(props, menu_struct)
+    for _, prop in pairs(props) do
+        print(prop)
+    end
+    --file.open("config.lua", "w")
+    --file.write(fmwVer)
+    --file.close()
+
+end
+
+
 
 local myrotary=require('myrotary')
 myrotary.init(0,5,6,7,
