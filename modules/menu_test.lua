@@ -1,9 +1,13 @@
 
+if file.exists("config.lua") then
+   dofile("config.lua")
+end
+
 menu=require('menu')
 menu.setstruct({
     items = {
         {label='Exit'},
-        {label='Save', type='func', eval='print("Saving...")'},
+        {label='Save', type='save'},
         {
             { label = '..' },
             label = 'Info',

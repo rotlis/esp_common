@@ -117,6 +117,8 @@ function M.navigationClick()
     elseif (itv.type==nil) then
         path[#path + 1] = curLinePos
         curLinePos = 1
+    elseif itv.type=='save' then
+        M.saveProps()
     elseif (itv.type=='func') then
         loadstring(itv.eval)()
     elseif (itv.type=='range') then
@@ -166,10 +168,11 @@ end
 function addFromPage(props, menuPage)
     for _, item in pairs(menuPage.items) do
         if item.prop~=nil and item.transient~=true then
+            local val=getPropOrDefault(item)
             if item.type=='range' or item.type=='toggle' then
-                table.insert(props, item.prop..'='..tostring(item.value))
+                table.insert(props, item.prop..'='..tostring(val))
             else
-                table.insert(props, item.prop..'=\''..item.value..'\'')
+                table.insert(props, item.prop..'=\''..val..'\'')
             end
 
         elseif item.items~=nil then
@@ -183,13 +186,12 @@ end
 function M.saveProps()
     local props = {}
     addFromPage(props, menu_struct)
+    file.open("config.lua", "w+")
     for _, prop in pairs(props) do
         print(prop)
+        file.writeline(prop)
     end
-    --file.open("config.lua", "w")
-    --file.write(fmwVer)
-    --file.close()
-
+    file.close()
 end
 
 
