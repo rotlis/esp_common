@@ -1,5 +1,5 @@
 wifi.sleeptype(wifi.NONE_SLEEP)
-wifi.setphymode(wifi.PHYMODE_B)
+wifi.setphymode(wifi.PHYMODE_G)
 wifi.setmode(wifi.STATION)
 
 wifi.sta.connect()
