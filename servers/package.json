@@ -5,8 +5,10 @@
   "main": "api_gateway.js",
   "scripts": {
     "initdb": "node init_db.js",
-    "start": "node api_gateway.js",
-    "devstart": "nodemon api_gateway.js",
+    "startdb": "node db_api.js",
+    "devdb": "nodemon db_api.js",
+    "startdns": "node dns_api.js",
+    "devdns": "nodemon dns_api.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -19,7 +21,9 @@
     "http": "0.0.0",
     "https": "^1.0.0",
     "morgan": "~1.8.1",
+    "node-rest-client": "^3.1.0",
     "promise": "^7.3.0",
+    "rest": "^2.0.0",
     "sqlite": "^2.8.0",
     "sqlite3": "^3.1.8"
   },

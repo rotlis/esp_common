@@ -18,8 +18,10 @@ app.use(bodyParser.urlencoded({
 
 app.post("/device/:id", function (req, res) {
     console.log(req.params.id);
-    db.run("INSERT OR IGNORE INTO Devices (id, lastSeenAt) VALUES ($id, datetime('now'));" +
-        "UPDATE Devices set lastSeenAt=datetime('now') WHERE id=$id", {
+    db.run("INSERT OR IGNORE INTO Devices (id, lastSeenAt) VALUES ($id, datetime('now'))", {
+            $id: req.params.id
+        });
+    db.run("UPDATE Devices set lastSeenAt=datetime('now') WHERE id=$id", {
             $id: req.params.id
         });
     res.end();
