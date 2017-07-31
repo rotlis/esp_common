@@ -30,16 +30,25 @@ function parseDnsRequest(name) {
     return {
         mac: lexems[0],
         time: lexems[1],
-        bat: lexems[2]
+        bat: lexems[2],
+        varName: lexems[3]
     };
 };
 
 function getIpResponse(requestObject, restResponse) {
-
+    var timeShift = Math.round(parseInt(requestObject.time) - Date.now()/1000);
+    console.log("timeShift:"+timeShift);
+    var varValue='0';
     if (restResponse.length > 0) {
+        var attrStored = restResponse.find(at => at.name === requestObject.varName);
+        if (attrStored){
+            varValue=attrStored.value;
+        }
         //esp <- color_cmd, refresh_interval, color
 
     }
+
+    return '1.1.1.'+varValue;
 }
 
 dnsd.createServer(function (req, res) {
@@ -58,7 +67,6 @@ dnsd.createServer(function (req, res) {
 
         rest.get('http://localhost:3000/attrs/' + requestObject.mac, function (restResponse) {
             console.log(restResponse);
-            console.log(restResponse[0].id);
             res.end(getIpResponse(requestObject, restResponse));
         });
 
