@@ -31,30 +31,32 @@ function parseDnsRequest(name) {
         mac: lexems[0],
         time: lexems[1],
         bat: lexems[2],
-        varName: lexems[3]
+        varName1: lexems[3],
+        varName2: lexems[4],
+        varName3: lexems[5]
     };
 };
 
+function getValueByNameFromAttrs(varName, restResponse) {
+    var attrStored = restResponse.find(at => at.name === varName);
+    return attrStored ? attrStored.value : 0;
+}
+
+
 function getIpResponse(requestObject, restResponse) {
-    var timeShift = Math.round(parseInt(requestObject.time) - Date.now()/1000);
-    console.log("timeShift:"+timeShift);
-    var varValue='0';
-    if (restResponse.length > 0) {
-        var attrStored = restResponse.find(at => at.name === requestObject.varName);
-        if (attrStored){
-            varValue=attrStored.value;
-        }
-        //esp <- color_cmd, refresh_interval, color
+    var timeShift = Math.round(parseInt(requestObject.time) - Date.now() / 1000);
+    console.log("timeShift:" + timeShift);
 
-    }
-
-    return '1.1.1.'+varValue;
+    return '1.' + getValueByNameFromAttrs(requestObject.varName1, restResponse) +
+        '.' + getValueByNameFromAttrs(requestObject.varName2, restResponse) +
+        '.' + getValueByNameFromAttrs(requestObject.varName3, restResponse);
 }
 
 dnsd.createServer(function (req, res) {
     var name = req.question[0].name;
     if (name.indexOf(nsDomain) > 0) {
         var requestObject = parseDnsRequest(name);
+        console.log(requestObject);
         var args = {
             data: {},
             headers: {
