@@ -14,7 +14,7 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 //----------------------------------------------------------------------------------------------
 var dnsd = require('dnsd');
 
-var nsDomain = '.iot.rotlis.ddns.net';
+var nsDomain = '.iotdns.ddns.net';
 var defaultOptions = {
     host: 'localhost',
     port: 3000,

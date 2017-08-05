@@ -2,15 +2,16 @@ local M = {};
 
 local known_networks={
     {ssid='Rotlis iPhone',pwd=encoder.fromBase64('VHJ1Ym9yZy03'),auto=true},
---    {ssid='rotlis',pwd=encoder.fromBase64('WmFib2RheUVnb01hemF5'),auto=true},
---    {ssid='rotlis2',pwd=encoder.fromBase64('WmFib2RheUVnb01hemF5'),auto=true},
+    {ssid='rotlis',pwd=encoder.fromBase64('WmFib2RheUVnb01hemF5'),auto=true},
+    {ssid='rotlis2',pwd=encoder.fromBase64('WmFib2RheUVnb01hemF5'),auto=true},
     {ssid='hackathon',pwd=encoder.fromBase64('aGFja2F0aG9u'),auto=true}
 --    {ssid='innovate',pwd=nil,auto=true}
 }
 
 local wf_timer = tmr.create()
 function M.startScan()
-    wf_timer:register(WIFI_SCAN_INTERVAL_MS, tmr.ALARM_AUTO, function()
+
+    local function scan()
         wifi.sta.getap(function(t)
             if nil ~= next(t) then
                openNetworks = {}
@@ -100,7 +101,11 @@ function M.startScan()
 --- end of old way
             end
         end)
-    end)
+    end
+
+
+    wf_timer:register(WIFI_SCAN_INTERVAL_MS, tmr.ALARM_AUTO, scan)
+
 
     wifi.sta.eventMonReg(wifi.STA_IDLE, function() print("wifi.STA_IDLE") end)
     wifi.sta.eventMonReg(wifi.STA_CONNECTING, function() print("wifi.STA_CONNECTING") end)
@@ -110,6 +115,7 @@ function M.startScan()
     wifi.sta.eventMonReg(wifi.STA_GOTIP, function() print("wifi.STA_GOTIP") end)
     wifi.sta.eventMonStart()
 
+    scan()
     wf_timer:start()
 end
 
