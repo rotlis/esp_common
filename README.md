@@ -20,6 +20,14 @@ mosquitto_pub -h 192.168.2.32 -p 1883 -q 0 -t  '5ccf7f193542/sys' -m '{"cmd":"up
 mosquitto_pub -h 192.168.2.32 -p 1883 -q 0 -t  '5ccf7f193542/sys' -m '{"cmd":"restart"}'
  
  
+ 
+ curl  http://localhost:3000/devices 
+curl -X POST http://192.168.2.32:3000/attr/60019400966a/build/2
+
+nslookup 5ccf7f193542.0.3.build.mode.interval.iotdns.ddns.net 192.168.2.32
+nslookup 5ccf7f193542.0.3.build.mode.interval.iotdns.ddns.net 203.219.46.28
+
+ 
  1970
  2017
  
@@ -32,10 +40,9 @@ mosquitto_pub -h 192.168.2.32 -p 1883 -q 0 -t  '5ccf7f193542/sys' -m '{"cmd":"re
 2^24 = 6 months time shift
 
 
-first byte
-2 - cmd ()
-
-
+Interval 
+0 - 15 sec * val => 15s - 1h (-unnecessary high precission )
+0
 
 
 Comm scenarios

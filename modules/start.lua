@@ -26,11 +26,19 @@ led_tmr:register(1000, tmr.ALARM_AUTO, function()
 end)
 led_tmr:start()
 
+function repaint()
+--    buffer:fill(0, g, r, b);
+--    ws2812.write(buffer)
+end
+
 local dns_comms_tmr=tmr.create()
 local wd_tmr=tmr.create()
-wd_tmr:register(60000, tmr.ALARM_SEMI, function() g,r,b=2,2,2 end)
+wd_tmr:register(60000, tmr.ALARM_SEMI, function()
+        g,r,b=2,2,2
+        repaint()
+end)
 
-dns_comms_tmr:register(25000, tmr.ALARM_AUTO, function()
+dns_comms_tmr:register(12000, tmr.ALARM_AUTO, function()
         mydns.mydns('build','mode','interval', function()
             wd_tmr:stop()
             wd_tmr:start()
@@ -47,6 +55,7 @@ dns_comms_tmr:register(25000, tmr.ALARM_AUTO, function()
             else
                 g,r,b=0,0,0
             end
+            repaint()
         end)
 end)
 dns_comms_tmr:start()

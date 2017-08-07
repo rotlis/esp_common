@@ -56,20 +56,22 @@ dnsd.createServer(function (req, res) {
     var name = req.question[0].name;
     if (name.indexOf(nsDomain) > 0) {
         var requestObject = parseDnsRequest(name);
-        console.log(requestObject);
+        console.log(name);
         var args = {
             data: {},
             headers: {
                 "Content-Type": "application/json"
             }
         };
-        rest.post('http://localhost:3000/device/' + requestObject.mac, args, function (restResponse) {
-            //ignore response from keepalive call
-        });
 
         rest.get('http://localhost:3000/attrs/' + requestObject.mac, function (restResponse) {
-            console.log(restResponse);
-            res.end(getIpResponse(requestObject, restResponse));
+            //console.log(restResponse);
+            setTimeout(function(){
+                res.end(getIpResponse(requestObject, restResponse));
+            }, 1000);
+            rest.post('http://localhost:3000/device/' + requestObject.mac, args, function (restResponse) {
+                //ignore response from keepalive call
+            });
         });
 
     } else {
