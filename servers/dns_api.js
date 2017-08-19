@@ -57,6 +57,7 @@ function parseDnsSetRequest(name) {
 };
 
 function getTimeResponseWithPrefix(prefix){
+    var now = new Date();
     return prefix + '.' + now.getHours() + '.' + now.getMinutes() + '.' + now.getSeconds();
 }
 
@@ -101,7 +102,6 @@ dnsd.createServer(function (req, res) {
             });
         }
     } else {
-        var now = new Date();
         var resp = getTimeResponseWithPrefix('254');
         console.log(resp);
         res.end(resp);
