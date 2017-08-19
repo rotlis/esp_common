@@ -40,7 +40,7 @@ function M.init(mqttBrokerIp)
     mqttClientObj:on("message", function(client, topic, message)
         if(topic==EspId.."/sys") then
             print("Got system message '"..message.."' on topic "..topic)
-            local msgObj = cjson.decode(message)
+            local msgObj = sjson.decode(message)
             if(msgObj['cmd']=="update") then
                 print("command:"..msgObj['cmd']..", url:"..msgObj['url'])
                 require("loader").loadUpdate(msgObj['url'])
