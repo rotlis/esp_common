@@ -17,15 +17,27 @@ mosquitto_pub -h 192.168.2.32 -p 1883 -q 0 -t  '5ccf7f193542/cmd' -m 'eksel moks
 
 mosquitto_pub -h 192.168.2.32 -p 1883 -q 0 -t  '5ccf7f193542/sys' -m '{"cmd":"update","url":"http://192.168.1.105:8080/"}'
  
-mosquitto_pub -h 192.168.2.32 -p 1883 -q 0 -t  '5ccf7f193542/sys' -m '{"cmd":"restart"}'
- 
+mosquitto_pub -h 192.168.2.32 -p 1883 -q 1 -t  '5ccf7f193542/sys' -m '{"cmd":"restart"}'
+mosquitto_pub -h 192.168.2.32 -p 1883 -q 1 -t  '5ccf7f1a52e0/sys' -m '{"cmd":"restart"}'
+mosquitto_pub -h 192.168.2.32 -p 1883 -q 1 -t  '60019400966a/sys' -m '{"cmd":"restart"}'
+mosquitto_pub -h 192.168.2.32 -p 1883 -q 1 -t  '5ccf7fc25763/sys' -m '{"cmd":"restart"}'
+mosquitto_pub -h 192.168.2.32 -p 1883 -q 1 -t  '5ccf7fc25565/sys' -m '{"cmd":"restart"}'
  
  
  curl  http://localhost:3000/devices 
-curl -X POST http://192.168.2.32:3000/attr/60019400966a/build/2
+curl -X POST http://192.168.2.32:3000/attr/5ccf7fc25565/build/2
 
 nslookup 5ccf7f193542.0.3.build.mode.interval.iotdns.ddns.net 192.168.2.32
 nslookup 5ccf7f193542.0.3.build.mode.interval.iotdns.ddns.net 203.219.46.28
+
+
+curl http://203.219.46.28/db_api/attrs/5ccf7f193542
+curl http://203.219.46.28/db_api/attrs/5ccf7f1a52e0
+curl http://203.219.46.28/db_api/attrs/60019400966a
+curl http://203.219.46.28/db_api/attrs/5ccf7fc25763
+curl http://203.219.46.28/db_api/attrs/5ccf7fc25565
+
+
 
  
  1970

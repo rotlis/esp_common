@@ -4,7 +4,7 @@ wifi.setmode(wifi.STATION)
 
 wifi.sta.connect()
 
-EspId = string.gsub(wifi.sta.getmac(), ':', '');
+EspId = string.gsub(wifi.sta.getmac(), ':', '')
 
 FIRMWARE_NAME="Unknown"
 FIRMWARE_VERSION="NA"
