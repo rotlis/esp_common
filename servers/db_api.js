@@ -19,11 +19,11 @@ app.use(bodyParser.urlencoded({
 app.post("/device/:id", function (req, res) {
     console.log(req.params.id);
     db.run("INSERT OR IGNORE INTO Devices (id, lastSeenAt) VALUES ($id, datetime('now'))", {
-            $id: req.params.id
-        });
+        $id: req.params.id
+    });
     db.run("UPDATE Devices set lastSeenAt=datetime('now') WHERE id=$id", {
-            $id: req.params.id
-        });
+        $id: req.params.id
+    });
     res.end();
 })
 
@@ -75,14 +75,16 @@ app.delete("/attr/:deviceId/:name", function (req, res) {
     res.end();
 })
 
-app.get("/attrs/:deviceId", function (req, res) {
-    db.all("SELECT * from Attrs where deviceId=$id", {
-        $id: req.params.deviceId
-    }, function (err, rows) {
-        console.log(rows);
-        res.send(rows);
-        res.end();
-    });
+app.get("/attrs/:deviceId?", function (req, res) {
+    db.all("SELECT * from Attrs" +
+        (req.params.deviceId ? " where deviceId=$id" : ""), {
+            $id: req.params.deviceId
+        },
+        function (err, rows) {
+            console.log(rows);
+            res.send(rows);
+            res.end();
+        });
 })
 
 // ------------------------------ log -----------------------------------
@@ -96,7 +98,7 @@ app.post("/log/:deviceId/:name/:value/:createdAt?", function (req, res) {
             $value: req.params.value,
             $createdAt: req.params.createdAt
         });
-    }else{
+    } else {
         db.run("INSERT INTO Log (deviceId, name, value, createdAt) VALUES ($deviceId,$name,$value, datetime('now'))", {
             $deviceId: req.params.deviceId,
             $name: req.params.name,
@@ -107,7 +109,7 @@ app.post("/log/:deviceId/:name/:value/:createdAt?", function (req, res) {
 })
 
 app.get("/log/:deviceId/:name?", function (req, res) {
-    if (req.params.name!=null) {
+    if (req.params.name != null) {
         db.all("SELECT * from Log where deviceId=$deviceId and name=$name", {
                 $deviceId: req.params.deviceId,
                 $name: req.params.name
@@ -119,13 +121,12 @@ app.get("/log/:deviceId/:name?", function (req, res) {
             })
     } else {
         db.all("SELECT * from Log where deviceId=$deviceId ", {
-                $deviceId: req.params.deviceId
-            }, function (err, rows) {
-                console.log(rows);
-                res.send(rows);
-                res.end();
-            }
-        )
+            $deviceId: req.params.deviceId
+        }, function (err, rows) {
+            console.log(rows);
+            res.send(rows);
+            res.end();
+        })
     }
 })
 

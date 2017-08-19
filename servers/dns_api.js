@@ -15,6 +15,8 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 var dnsd = require('dnsd');
 
 var nsDomain = '.iotdns.ddns.net';
+var nsDomainSet = '.set.iotdns.ddns.net';
+
 var defaultOptions = {
     host: 'localhost',
     port: 3000,
@@ -24,7 +26,14 @@ var defaultOptions = {
     }
 };
 
-function parseDnsRequest(name) {
+var restPostArgs = {
+    data: {},
+    headers: {
+        "Content-Type": "application/json"
+    }
+};
+
+function parseDnsGetRequest(name) {
     name = name.substring(0, name.length - nsDomain.length);
     var lexems = name.split("\.");
     return {
@@ -37,11 +46,24 @@ function parseDnsRequest(name) {
     };
 };
 
+function parseDnsSetRequest(name) {
+    name = name.substring(0, name.length - nsDomainSet.length);
+    var lexems = name.split("\.");
+    return {
+        mac: lexems[0],
+        varName: lexems[1],
+        varValue: lexems[2]
+    };
+};
+
+function getTimeResponseWithPrefix(prefix){
+    return prefix + '.' + now.getHours() + '.' + now.getMinutes() + '.' + now.getSeconds();
+}
+
 function getValueByNameFromAttrs(varName, restResponse) {
     var attrStored = restResponse.find(at => at.name === varName);
     return attrStored ? attrStored.value : 0;
 }
-
 
 function getIpResponse(requestObject, restResponse) {
     var timeShift = Math.round(parseInt(requestObject.time) - Date.now() / 1000);
@@ -54,29 +76,33 @@ function getIpResponse(requestObject, restResponse) {
 
 dnsd.createServer(function (req, res) {
     var name = req.question[0].name;
+
     if (name.indexOf(nsDomain) > 0) {
-        var requestObject = parseDnsRequest(name);
         console.log(name);
-        var args = {
-            data: {},
-            headers: {
-                "Content-Type": "application/json"
-            }
-        };
+        if (name.indexOf(nsDomainSet) > 0) {
+            var requestObject = parseDnsSetRequest(name);
+            //            /attr/:deviceId/:name/:value
+            rest.post('http://localhost:3000/attr/' + requestObject.mac + '/' + requestObject.varName + '/' + requestObject.varValue,
+                restPostArgs,
+                function (restResponse) {
+                    res.end(getTimeResponseWithPrefix('253'));
+                });
 
-        rest.get('http://localhost:3000/attrs/' + requestObject.mac, function (restResponse) {
-            //console.log(restResponse);
-            setTimeout(function(){
+        } else {
+            var requestObject = parseDnsGetRequest(name);
+
+            rest.get('http://localhost:3000/attrs/' + requestObject.mac, function (restResponse) {
                 res.end(getIpResponse(requestObject, restResponse));
-            }, 1000);
-            rest.post('http://localhost:3000/device/' + requestObject.mac, args, function (restResponse) {
-                //ignore response from keepalive call
+                rest.post('http://localhost:3000/device/' + requestObject.mac,
+                    restPostArgs,
+                    function (restResponse) {
+                        //ignore response from keepalive call
+                    });
             });
-        });
-
+        }
     } else {
         var now = new Date();
-        var resp = '254' + '.' + now.getHours() + '.' + now.getMinutes() + '.' + now.getSeconds();
+        var resp = getTimeResponseWithPrefix('254');
         console.log(resp);
         res.end(resp);
     }
