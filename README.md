@@ -28,7 +28,7 @@ mosquitto_pub -h 192.168.2.32 -p 1883 -q 1 -t  '5ccf7fc25565/sys' -m '{"cmd":"re
 curl -X POST http://192.168.2.32:3000/attr/5ccf7fc25565/build/2
 
 nslookup 5ccf7f193542.0.3.build.mode.interval.iotdns.ddns.net 192.168.2.32
-nslookup 5ccf7f193542.0.3.build.mode.interval.iotdns.ddns.net 203.219.46.28
+nslookup 5ccf7fc25763.build.1.set.iotdns.ddns.net 203.219.46.28
 
 
 curl http://203.219.46.28/db_api/attrs/5ccf7f193542
