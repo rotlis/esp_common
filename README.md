@@ -30,6 +30,9 @@ curl -X POST http://192.168.2.32:3000/attr/5ccf7fc25565/build/2
 nslookup 5ccf7f193542.0.3.build.mode.interval.iotdns.ddns.net 192.168.2.32
 nslookup 5ccf7fc25763.build.1.set.iotdns.ddns.net 203.219.46.28
 
+nslookup mymac.0.3.build.mode.interval.iotdns.ddns.net 127.0.0.1
+nslookup mymac.build.1.set.iotdns.ddns.net 127.0.0.1
+
 
 curl http://203.219.46.28/db_api/attrs/5ccf7f193542
 curl http://203.219.46.28/db_api/attrs/5ccf7f1a52e0
