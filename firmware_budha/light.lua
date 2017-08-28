@@ -24,9 +24,8 @@ local colors = {
 
 function M.init()
     ws2812.init()
---    prebuffer = ws2812.newBuffer(16, 3)
-    prebuffer:fill(0, 0, 0, 0)
-    ws2812.write(prebuffer)
+    buffer:fill(0, 0, 0, 0)
+    ws2812.write(buffer)
 end
 
 function M.startMystery()
@@ -65,6 +64,7 @@ function M.startMystery()
             ws2812.write(buffer)
         end
     end)
+    light_timer:start()
 end
 
 function M.startRainbow()
@@ -102,12 +102,13 @@ function M.startRainbow()
             ws2812.write(buffer)
         end
     end)
+    light_timer:start()
 end
 
 function M.startWhite()
     print("START white")
     light_timer:stop()
-    prebuffer:fill(128, 128, 128, 0)
+    buffer:fill(128, 128, 128, 0)
     ws2812.write(buffer)
 end
 
