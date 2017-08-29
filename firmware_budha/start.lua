@@ -4,9 +4,9 @@ light = require("light")
 sound.init()
 light.init()
 
---mqttClient.setCallback(function(client, topic, message)
---    print("MY HANDLER: MQTT topic:" .. topic .. ", message:" .. message)
---end)
+mqttClient.setCallback(function(client, topic, message)
+    print("MY HANDLER: MQTT topic:" .. topic .. ", message:" .. message)
+end)
 
 
 -- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

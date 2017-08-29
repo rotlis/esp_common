@@ -2,7 +2,15 @@ local M={}
 
 PLAY_TIMEOUT=3*60*1000
 
-volume=1
+minVolume=1
+maxVolume=20
+startVolume=12
+startAlarmVolume=5
+volume=12
+
+fadeInStepDelay=10
+fadeOutStepDelay=2
+
 selectDevice= '7E 03 35 01 EF'
 
 sleep= '7E 03 35 03 EF'
@@ -38,6 +46,26 @@ function getVolumeCmd()
     return '7E 03 31 '..intToHex(volume)..' EF'
 end
 
+function getRandomNumbersFromSequense(howMany,maxNumber)
+    local sequence={}
+    local songs={}
+    for i=1,maxNumber do table.insert(sequence,i) end
+    for i=1,howMany do
+         table.insert(songs, table.remove(sequence,math.random(1,#sequence)))
+    end
+    return songs
+end
+
+function getPlaylistCmd(folder, songsCount)
+    local totalSongsCount = folder==1 and 20 or 30
+    local songs=getRandomNumbersFromSequense(songsCount,totalSongsCount)
+    --for i=1,#songs do print(songs[i]) end
+    local cmd='79 '..intToHex(2+songsCount*2)
+    for i=1,#songs do
+       cmd = cmd..' '..intToHex(folder)..' '..intToHex(songs[i])
+    end
+    return cmd..' EF'
+end
 
 function M.exec(cmd)
     print(cmd)
@@ -68,8 +96,8 @@ end
 
 function fadeOut()
     print("fadeout start")
-    volume_tmr:register(2000, tmr.ALARM_AUTO, function()
-        if (volume==1) then
+    volume_tmr:register(fadeOutStepDelay*1000, tmr.ALARM_AUTO, function()
+        if (volume<=minVolume) then
             volume_tmr:stop()
             print("fadeout stop")
         else
@@ -81,8 +109,8 @@ end
 
 function fadeIn()
     print("fadein start")
-    volume_tmr:register(1000, tmr.ALARM_AUTO, function()
-        if (volume==30) then
+    volume_tmr:register(fadeInStepDelay*1000, tmr.ALARM_AUTO, function()
+        if (volume>=maxVolume) then
             volume_tmr:stop()
             print("fadein stop")
         else
@@ -96,12 +124,12 @@ function M.startRelax()
     M.exec(reset)
     M.exec(selectDevice)
     volume_tmr:stop()
-    volume=15
+    volume=startVolume
 --    M.exec(wakeup)
 --    M.exec(stopPlay)
 --    M.exec(allSongsCyclePlay)
     M.exec(getVolumeCmd())
-    M.exec('7E '..intToHex(16)..' 45 01 01 01 02 01 03 01 04 01 05 01 06 01 07 EF')
+    M.exec(getPlayListCmd(1,7))
 --    tmr.alarm(0, 1000, tmr.ALARM_SINGLE, function() M.exec(startPlay) end)
     M.exec(startPlay)
 
@@ -114,13 +142,13 @@ function M.startAlarm()
     M.exec(reset)
     M.exec(selectDevice)
     volume_tmr:stop()
-    volume=5
+    volume=startAlarmVolume
     M.exec(getVolumeCmd())
 
 --    M.exec(wakeup)
     M.exec(singleCyclePlay)
     M.exec(stopPlay)
-    M.exec('7E '..intToHex(16)..' 45 02 01 02 02 02 03 02 04 02 05 02 06 02 07 EF')
+    M.exec(getPlayListCmd(2,7))
 --    tmr.alarm(0, 1000, tmr.ALARM_SINGLE, function() M.exec(startPlay) end)
     M.exec(startPlay)
     fadeIn()
