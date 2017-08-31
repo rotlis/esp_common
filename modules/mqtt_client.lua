@@ -1,14 +1,14 @@
 local M = {};
 
-SEC = 1000
-NO_AUTORECONNECT = 0
-INSECURE = 0
-MQTT_PORT = 1883
+local SEC = 1000
+local NO_AUTORECONNECT = 0
+local INSECURE = 0
+local MQTT_PORT = 1883
 
-QOS_0 = 0
-QOS_2 = 2
-NO_RETAIN = 0
-RETAIN = 1
+local QOS_0 = 0
+local QOS_2 = 2
+local NO_RETAIN = 0
+local RETAIN = 1
 
 local connected=false
 

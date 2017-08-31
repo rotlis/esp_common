@@ -6,7 +6,6 @@ local known_networks={
     {ssid='rotlis2',pwd=encoder.fromBase64('WmFib2RheUVnb01hemF5'),auto=true},
     {ssid='hackathon',pwd=encoder.fromBase64('aGFja2F0aG9u'),auto=true},
     {ssid='innovate_guest',pwd=nil,auto=true}
---    {ssid='innovate',pwd=nil,auto=true}
 }
 
 local wf_timer = tmr.create()
@@ -15,12 +14,12 @@ function M.startScan()
     local function scan()
         wifi.sta.getap(function(t)
             if nil ~= next(t) then
-               openNetworks = {}
-               bestRsi = -99
-               bestNetwork = nil
+               local openNetworks = {}
+               local bestRsi = -99
+               local bestNetwork = nil
 
                for ssid,v in pairs(t) do
-                 wp,sg,mc,ch = string.match(v, '(.+),(.+),(.+),(.+)')
+                 local wp,sg,mc,ch = string.match(v, '(.+),(.+),(.+),(.+)')
                  sg = tonumber(sg)
 
                  -- check if cueent network is known and has better signal among all known
@@ -38,7 +37,6 @@ function M.startScan()
                  if '0' == wp then
                     openNetworks[ssid] = sg
                     print(ssid..'~'..sg)
---                                print(openNetworks)
                  end
                end --for
 
@@ -89,7 +87,6 @@ function M.startScan()
                 elseif next(openNetworks) ~= nil then
                     for ssid,rsi in pairs(openNetworks) do
                         print("No current connection. Will try to connect to open net "..ssid)
---                        wifi.sta.disconnect()
                         wifi.sta.config({ssid=ssid,pwd=nil,auto=false})
                         wifi.sta.connect()
                         break --for
@@ -108,13 +105,13 @@ function M.startScan()
     wf_timer:register(WIFI_SCAN_INTERVAL_MS, tmr.ALARM_AUTO, scan)
 
 
-    wifi.sta.eventMonReg(wifi.STA_IDLE, function() print("wifi.STA_IDLE") end)
-    wifi.sta.eventMonReg(wifi.STA_CONNECTING, function() print("wifi.STA_CONNECTING") end)
-    wifi.sta.eventMonReg(wifi.STA_WRONGPWD, function() print("wifi.STA_WRONGPWD") end)
-    wifi.sta.eventMonReg(wifi.STA_APNOTFOUND, function() print("wifi.STA_APNOTFOUND") end)
-    wifi.sta.eventMonReg(wifi.STA_FAIL, function() print("wifi.STA_FAIL") end)
-    wifi.sta.eventMonReg(wifi.STA_GOTIP, function() print("wifi.STA_GOTIP") end)
-    wifi.sta.eventMonStart()
+--    wifi.eventmon.register(wifi.STA_IDLE, function() print("wifi.STA_IDLE") end)
+--    wifi.eventmon.register(wifi.STA_CONNECTING, function() print("wifi.STA_CONNECTING") end)
+--    wifi.eventmon.register(wifi.STA_WRONGPWD, function() print("wifi.STA_WRONGPWD") end)
+--    wifi.eventmon.register(wifi.STA_APNOTFOUND, function() print("wifi.STA_APNOTFOUND") end)
+--    wifi.eventmon.register(wifi.STA_FAIL, function() print("wifi.STA_FAIL") end)
+--    wifi.eventmon.register(wifi.STA_GOTIP, function() print("wifi.STA_GOTIP") end)
+--    wifi.sta.eventMonStart()
 
     scan()
     wf_timer:start()

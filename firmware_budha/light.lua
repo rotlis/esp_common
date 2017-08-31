@@ -32,7 +32,7 @@ function M.startMystery()
     print("START mystery")
 
     light_timer:stop()
-    color = colors[math.random(12)]
+    local color = colors[math.random(12)]
 
     light_timer:register( 40, tmr.ALARM_AUTO, function()
         z = z + 5

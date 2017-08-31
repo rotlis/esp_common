@@ -5,7 +5,7 @@ wifi.setmode(wifi.STATION)
 wifi.sta.connect()
 
 EspId = string.gsub(wifi.sta.getmac(), ':', '')
-
+print('EspId:'..EspId)
 FIRMWARE_NAME="Unknown"
 FIRMWARE_VERSION="NA"
 if file.open(EspId) ~= nil then
@@ -18,10 +18,10 @@ if file.open("_VER") ~= nil then
 end
 
 
-print("*** You've got 3 sec to stop timer 0 (e.g. tmr.stop(0))***")
+print("*** You've got 5 sec to stop timer 0 (e.g. tmr.stop(0))***")
 
-tmr.alarm(0,3000,0, function()
-    require("properties")
+tmr.alarm(0,5000,0, function()
+    dofile("properties.lua")
     if file.exists("config.lua") then
        dofile("config.lua")
     end
@@ -29,7 +29,6 @@ tmr.alarm(0,3000,0, function()
     LOGGER = require("logger")
     mqttClient = require("mqtt_client")
     mqttClient.init(MQTT_BROKER_IP)
-    --mdns.register("fishtank", {hardware='NodeMCU'})
 
     if file.exists("start.lua") then
         print("Executing start.lua")
