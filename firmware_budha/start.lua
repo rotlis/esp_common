@@ -9,18 +9,18 @@ mqttClient.setCallback(function(client, topic, message)
     if message=='alarm' then
         sound.startAlarm()
         light.startWhite()
-    else if message=='relax' then
+    elseif message=='relax' then
         sound.startRelax()
         light.startRainbow()
-    else if message=='stop' then
+    elseif message=='stop' then
         sound.stop()
         light.stop()
-    else
+    end
 end)
 
 function debounce (func)
     local last = 0
-    local delay = 50000 -- 50ms * 1000 as tmr.now() has μs resolution
+    local delay = 200000 -- 200ms * 1000 as tmr.now() has μs resolution
 
     return function (...)
         local now = tmr.now()

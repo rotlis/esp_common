@@ -24,8 +24,8 @@ local setVolume = '7E03310FEF' --Set the volume to 15 (0x0F is 15)
 local allSongsCyclePlay='7E 03 33 00 EF' --All songs cycle play mode
 local singleCyclePlay='7E 03 33 01 EF' --single cycle play mode
 
-local startPlay= '7E 02 01 EF'
-local stopPlay= '7E 02 0E EF'
+local startPlay= '7E0201EF'
+local stopPlay= '7E020EEF'
 
 local nextSong= '7E 02 03 EF'
 local prevSong= '7E 02 04 EF'
@@ -42,8 +42,8 @@ local function intToHex(i)
     return string.format('%02x',i)
 end
 
-local function getVolumeCmd()
-    return '7E 03 31 '..intToHex(volume)..' EF'
+local function getVolumeCmd(vol)
+    return '7E 03 31 '..intToHex(vol)..' EF'
 end
 
 local function getRandomNumbersFromSequense(howMany,maxNumber)
@@ -57,39 +57,42 @@ local function getRandomNumbersFromSequense(howMany,maxNumber)
 end
 
 local function getPlayListCmd(folder, songsCount)
-    local totalSongsCount = folder==1 and 20 or 20
+    local totalSongsCount = 20
     local songs=getRandomNumbersFromSequense(songsCount,totalSongsCount)
-    local cmd='7E '..intToHex(2+songsCount*2)..' 45 '
+    local cmd='7E'..intToHex(2+songsCount*2)..'45'
     for i=1,#songs do
-       cmd = cmd..' '..intToHex(folder)..' '..intToHex(songs[i])
+        local songN=songs[i]
+        if songN==10 then songN=21 end
+        if songN==13 then songN=22 end
+       cmd = cmd..intToHex(folder)..intToHex(songN)
     end
-    return cmd..' EF'
+    return cmd..'EF'
 end
 
 function M.exec(cmd)
-    tmr.delay(50000)
+--    print(cmd)
+    tmr.delay(100000)
     print(encoder.fromHex(string.gsub(cmd, ' ', '')))
-    tmr.delay(50000)
 end
-
 
 function M.init()
     uart.setup(0, 9600, 8, uart.PARITY_NONE, uart.STOPBITS_1, 0)
     M.exec(reset)
     M.exec(selectDevice)
+    M.exec(sleep)
     isPlaying=false
 end
 
 function M.volumeUp()
     volume = math.min(volume+1, 30)
     print("volumeup:"..volume)
-    M.exec(getVolumeCmd())
+    M.exec(getVolumeCmd(volume))
 end
 
 function M.volumeDown()
     volume = math.max(volume-1, 1)
     print("volumedown:"..volume)
-    M.exec(getVolumeCmd())
+    M.exec(getVolumeCmd(volume))
 end
 
 function fadeOut()
@@ -123,18 +126,10 @@ end
 
 function M.startRelax()
     M.exec(wakeup)
---    M.exec(reset)
-    M.exec(selectDevice)
     volume_tmr:stop()
     volume=startVolume
-
-    M.exec(getVolumeCmd())
-
-    M.exec(singleCyclePlay)
-    M.exec(stopPlay)
     M.exec(getPlayListCmd(1,7))
-    M.exec(startPlay)
-    M.exec(startPlay)
+    M.exec(getVolumeCmd(volume))
     isPlaying=true
     play_timeout_tmr:register(PLAY_TIMEOUT, tmr.ALARM_SINGLE, fadeOut)
     play_timeout_tmr:start()
@@ -142,17 +137,10 @@ end
 
 function M.startAlarm()
     M.exec(wakeup)
---    M.exec(reset)
-    M.exec(selectDevice)
     volume_tmr:stop()
     volume=startAlarmVolume
-    M.exec(getVolumeCmd())
-
-    M.exec(singleCyclePlay)
-    M.exec(stopPlay)
     M.exec(getPlayListCmd(2,7))
-    M.exec(startPlay)
-    M.exec(startPlay)
+    M.exec(getVolumeCmd(volume))
     isPlaying=true
     fadeIn()
 end
@@ -161,8 +149,8 @@ function M.stop()
     volume_tmr:stop()
     play_timeout_tmr:stop()
     M.exec(stopPlay)
+    M.exec(sleep)
     isPlaying=false
---    M.exec(sleep)
 end
 
 function M.toggleRelax()
