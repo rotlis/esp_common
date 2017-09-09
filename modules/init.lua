@@ -18,9 +18,9 @@ if file.open("_VER") ~= nil then
 end
 
 
-print("*** You've got 5 sec to stop timer 0 (e.g. tmr.stop(0))***")
+print("*** You've got 2 sec to stop timer 0 (e.g. tmr.stop(0))***")
 
-tmr.alarm(0,5000,0, function()
+tmr.alarm(0,2000,0, function()
     dofile("properties.lua")
     if file.exists("config.lua") then
        dofile("config.lua")
