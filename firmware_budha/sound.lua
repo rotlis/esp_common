@@ -1,15 +1,15 @@
 local M={}
 
-local PLAY_TIMEOUT=3*60*1000
+local PLAY_TIMEOUT=30*60*1000
 
 local minVolume=1
 local maxVolume=20
 local startVolume=12
-local startAlarmVolume=5
+local startAlarmVolume=3
 local volume=12
 
-local fadeInStepDelay=10
-local fadeOutStepDelay=2
+local fadeInStepDelay=15
+local fadeOutStepDelay=5
 
 local selectDevice= '7E033501EF'
 
@@ -17,8 +17,6 @@ local sleep= '7E033503EF'
 local wakeup='7E033502EF'
 local reset= '7E033505EF'
 
---local volumeUp = '7E0205EF'
---local volumeDown='7E0206EF'
 local setVolume = '7E03310FEF' --Set the volume to 15 (0x0F is 15)
 
 local allSongsCyclePlay='7E 03 33 00 EF' --All songs cycle play mode
@@ -29,9 +27,6 @@ local stopPlay= '7E020EEF'
 
 local nextSong= '7E 02 03 EF'
 local prevSong= '7E 02 04 EF'
-
---local fastForward= '7E 02 0A EF'
---local rewind= '7E 02 0B EF'
 
 local volume_tmr = tmr.create()
 local play_timeout_tmr = tmr.create()
