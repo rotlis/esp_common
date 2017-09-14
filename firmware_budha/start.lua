@@ -46,7 +46,7 @@ gpio.mode(pin_f, gpio.INT, gpio.PULLUP )
 
 gpio.trig(pin_a, "down", debounce(light.startWhite))
 gpio.trig(pin_b, "down", debounce(light.stop))
-gpio.trig(pin_c, "down", debounce(light.startMystery))
+gpio.trig(pin_c, "down", debounce(light.startRainbow))
 
 gpio.trig(pin_d, "down", debounce(sound.volumeUp))
 gpio.trig(pin_e, "down", debounce(sound.toggleRelax))

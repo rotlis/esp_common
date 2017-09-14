@@ -3,7 +3,7 @@ local M={}
 local PLAY_TIMEOUT=30*60*1000
 
 local minVolume=1
-local maxVolume=20
+local maxVolume=18
 local startVolume=12
 local startAlarmVolume=3
 local volume=12
