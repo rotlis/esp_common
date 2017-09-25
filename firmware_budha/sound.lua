@@ -5,10 +5,10 @@ local PLAY_TIMEOUT=30*60*1000
 local minVolume=1
 local maxVolume=18
 local startVolume=12
-local startAlarmVolume=3
+local startAlarmVolume=1
 local volume=12
 
-local fadeInStepDelay=15
+local fadeInStepDelay=30
 local fadeOutStepDelay=5
 
 local selectDevice= '7E033501EF'
@@ -66,7 +66,7 @@ end
 
 function M.exec(cmd)
 --    print(cmd)
-    tmr.delay(100000)
+    tmr.delay(20000)
     print(encoder.fromHex(string.gsub(cmd, ' ', '')))
 end
 
@@ -150,9 +150,11 @@ end
 
 function M.toggleRelax()
     if isPlaying then
+        print("stop relax")
         M.stop()
         light.stop()
     else
+        print("start relax")
         M.startRelax()
         light.startRainbow()
     end
