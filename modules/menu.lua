@@ -13,7 +13,7 @@ local menu_struct
 
 local menu_page
 local shiftMode=0 --0-navigation, 1-menuItem
-
+local presentationMode=0 --0-info, 1-menu
 
 function M.init_OLED() --Set up the u8glib lib
     if hasOled then
@@ -22,7 +22,7 @@ function M.init_OLED() --Set up the u8glib lib
         disp:setFont(u8g.font_6x10)
         disp:setFontRefHeightExtendedText()
         disp:setDefaultForegroundColor()
-        disp:setFontPosTop()
+--        disp:setFontPosTop()
     end
 end
 
@@ -38,7 +38,7 @@ function getPropOrDefault(itv)
     return val
 end
 
-function M.showMenu(path)
+function M.showMenu()
     --descent
     menu_page = menu_struct
     for _, pn in pairs(path) do
@@ -67,20 +67,25 @@ function M.showMenu(path)
 
     --show in OLED
     disp:firstPage()
-    disp:drawStr(0, 0, '@'..(menu_page.label~=nil and menu_page.label or 'MENU'))
+    disp:setFont(u8g.font_6x10)
     repeat
+        disp:drawStr(0, 10, '@'..(menu_page.label~=nil and menu_page.label or 'MENU'))
         for itn, line in pairs(lines) do
-            disp:drawStr(1, itn*10+5, line)
+            disp:drawStr(1, itn*10+14, line)
         end
 
     until disp:nextPage() == false
 
 end
 
+function M.topMenu()
+    path={}
+    M.showMenu()
+end
 
 function M.setstruct(struct)
     menu_struct = struct
-    M.showMenu(path)
+    path={}
 end
 
 function M.navigationShift(shift)
@@ -111,6 +116,8 @@ function M.navigationClick()
     if (curLinePos == 1) then
         if (#path==0) then
             print('exit')
+            presentationMode=0
+            M.show()
         else
             curLinePos = table.remove(path)
         end
@@ -150,6 +157,9 @@ function M.navigationClick()
 --        print(itv.prop..'=\''..tostring(val)..'\'')
         loadstring(itv.prop..'=\''..tostring(val)..'\'')()
 ---------------------- here
+    elseif (itv.type=='exit') then
+        presentationMode=0
+        M.show()
     else
 
     end
@@ -199,25 +209,61 @@ end
 local myrotary=require('myrotary')
 myrotary.init(0,5,6,7,
     function(shift)
-        if shiftMode==0 then
-            M.navigationShift(shift)
-        else
-            M.menuItemShift(shift)
-        end
+        if presentationMode==1 then 
+            if shiftMode==0 then
+                M.navigationShift(shift)
+            else
+                M.menuItemShift(shift)
+            end
+        end    
     end,
     function()
-        if shiftMode==0 then
-            M.navigationClick()
-        else
-            M.menuItemClick()
-        end
-        M.showMenu(path)
+        if presentationMode==0 then 
+            presentationMode=1
+            M.show()
+        else    
+            print("presentationMode:1")
+            if shiftMode==0 then
+                M.navigationClick()
+            else
+                M.menuItemClick()
+            end
+            M.show()
+        end    
     end
 )
 
-M.init_OLED()
+function M.show()
+   if presentationMode==0 then
+        M.showInfo()
+    else
+        M.showMenu()
+    end    
+end
 
+function M.showInfo()
+    --prepare lines
+    local lines={}
+--    line=line..': '..tostring(val)
+    table.insert(lines, "Battery:"..tostring(adc.read(0)))
+    table.insert(lines, "Tick:"..tostring(tmr.now()))
+    table.insert(lines, "Heap:"..tostring(node.heap()))
+
+    --show in OLED
+    disp:firstPage()
+    repeat
+        disp:setFont(u8g.font_10x20)
+        disp:drawStr(0, 15, 'Barnacles')
+        disp:setFont(u8g.font_6x10)
+        for itn, line in pairs(lines) do
+            disp:drawStr(1, itn*10+15, line)
+        end
+
+    until disp:nextPage() == false
+ 
+end    
 -- random helpers
 
+M.init_OLED()
 
 return M

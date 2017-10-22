@@ -16,10 +16,8 @@ local M = {};
 
 
 function M.mydns(varName1, varName2, varName3, cb)
-     net.dns.setdnsserver('203.219.46.28', 0)
-     net.dns.setdnsserver('192.168.2.32', 1)
-
-     aname=EspId.."."..rtctime.get().."."..adc.read(0).."."..varName1.."."..varName2.."."..varName3..".iotdns.ddns.net"
+--     aname=EspId.."."..rtctime.get().."."..adc.read(0).."."..varName1.."."..varName2.."."..varName3..".iotdns.ddns.net"
+     aname=EspId.."."..rtctime.get()..".0."..varName1.."."..varName2.."."..varName3..".nbn.ioti.co"
      print(aname)
      net.dns.resolve(aname, function(sk, ip)
          if (ip == nil) then

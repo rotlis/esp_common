@@ -6,7 +6,7 @@ end
 menu=require('menu')
 menu.setstruct({
     items = {
-        {label='Exit'},
+        {label='Exit', type='exit'},
         {label='Save', type='save'},
         {
             { label = '..' },
@@ -37,8 +37,8 @@ menu.setstruct({
                     items = {
                         { label = '..' },
                         { label = 'Intensity', type='range', min=0, max=10, increment=2, value=4, prop='zap_intencity' },
-                        { label = 'LowBat', type='range', min=11, max=14,  value=11, prop='low_bat' },
-                        { label = 'HighBat', type='range', min=11, max=14,  value=11, prop='high_bat' },
+                        { label = 'LowBat', type='range', min=120, max=140,  value=120, prop='low_bat' },
+                        { label = 'HighBat', type='range', min=120, max=140,  value=122, prop='high_bat' },
                         { label = 'PowerCycle', type='range', min=0, max=600, increment=10, value=0, prop='power_cycle'  }
                     }
                 },
@@ -56,12 +56,13 @@ menu.setstruct({
                     label = 'SD',
                     items = {
                         { label = '..' },
-                        { label = 'Info' , type='func', value=todo},
-                        { label = 'Erase', type='func', value=todo },
-                        { label = 'Format', type='func', vlaue=todo }
+                        { label = 'Info' , type='func', eval=''},
+                        { label = 'Erase', type='func', eval=''},
+                        { label = 'Format', type='func', eval=''}
                     }
                 }
             }
         }
     }
 })
+menu.show()
