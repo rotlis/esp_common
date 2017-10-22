@@ -14,8 +14,8 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 //----------------------------------------------------------------------------------------------
 var dnsd = require('dnsd');
 
-var nsDomain = '.iotdns.ddns.net';
-var nsDomainSet = '.set.iotdns.ddns.net';
+var nsDomain = '.nbn.ioti.co';
+var nsDomainSet = '.s.nbn.ioti.co';
 
 var defaultOptions = {
     host: 'localhost',

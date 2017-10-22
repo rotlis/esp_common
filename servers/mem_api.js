@@ -47,6 +47,7 @@ app.get("/device/:id", function (req, res) {
 
 app.get("/devices", function (req, res) {
     console.log(devices);
+    res.setHeader("Access-Control-Allow-Origin", "*");
     res.send(devices);
     res.end();
 })
