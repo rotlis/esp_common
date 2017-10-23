@@ -1,4 +1,5 @@
 var fs = require('fs');
+var pmx = require('pmx');
 
 var express = require("express");
 var bodyParser = require("body-parser");
@@ -12,6 +13,11 @@ app.use(bodyParser.urlencoded({
 
 var devices=new Map();
 var devices={};
+// ------------------------------ actions -----------------------------------
+pmx.action('clear', function(reply) {
+    devices={};
+    reply({ result : 'ok' });
+});
 
 // ------------------------------ devices -----------------------------------
 
