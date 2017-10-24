@@ -23,15 +23,16 @@ pmx.action('all devices', function(reply) {
     reply({ devices : devices });
 });
 
-pmx.action('set mode for all', function(param_mode, reply){
-    Object.entries(devices).forEach(([mac, attrs]) => {
-        attrs['mode']=param_mode;
+pmx.action('set mode for all', function(param, reply){
+    Object.keys(devices).forEach(function(mac) {
+        devices[mac]['mode']=param;
     });
     reply({ result : 'ok' });
 });
 
-pmx.action('set attr', function(param_mac, param_key, param_value, reply){
-    devices[param_mac][param_key]=param_value;
+pmx.action('set attr', function(param, reply){
+    param=JSON.parse(param);
+    devices[param.mac][param.key]=param.value;
     reply({ result : 'ok' });
 });
 // ------------------------------ devices -----------------------------------
