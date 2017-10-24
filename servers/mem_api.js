@@ -23,6 +23,17 @@ pmx.action('all devices', function(reply) {
     reply({ devices : devices });
 });
 
+pmx.action('set mode for all', function(param_mode, reply){
+    Object.entries(devices).forEach(([mac, attrs]) => {
+        attrs['mode']=param_mode;
+    });
+    reply({ result : 'ok' });
+});
+
+pmx.action('set attr', function(param_mac, param_key, param_value, reply){
+    devices[param_mac][param_key]=param_value;
+    reply({ result : 'ok' });
+});
 // ------------------------------ devices -----------------------------------
 
 app.post("/device/:id", function (req, res) {
