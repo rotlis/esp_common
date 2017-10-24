@@ -19,6 +19,10 @@ pmx.action('clear', function(reply) {
     reply({ result : 'ok' });
 });
 
+pmx.action('all devices', function(reply) {
+    reply({ devices : devices });
+});
+
 // ------------------------------ devices -----------------------------------
 
 app.post("/device/:id", function (req, res) {
