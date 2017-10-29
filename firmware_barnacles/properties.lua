@@ -1,13 +1,13 @@
---highVoltageThreshold = 860 -- 13.0v
 
-lowVoltageThreshold = 815 -- 12.3v
-highVoltageThreshold = 835 -- 12.6v
+low_bat = 12100
+high_bat = 12300
+duty_cycle = 10
 
-powerSwitchDivisor = 5 -- on when counter%divisor==0. Eg. 1=>100%, 2=>50%, 3=>33%, 4=>25%, 5=>20%
-
-mosfet = 2
---polarA = 7
---polarB = 6
+mosfet = 0
 polarA = 3
 polarB = 4
 spiSlaveSelect = 12
+
+WIFI_SCAN_INTERVAL_MS=60000
+
+THINGSPEAK_KEY='H7Q9TMFP05V34CY0'

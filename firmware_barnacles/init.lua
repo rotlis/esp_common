@@ -18,16 +18,15 @@ if file.open("_VER") ~= nil then
 end
 
 
-print("*** You've got 3 sec to stop timer 0 (e.g. tmr.stop(0))***")
+print("*** You've got 2 sec to stop timer 0 (e.g. tmr.stop(0))***")
 
-tmr.alarm(0,3000,0, function()
+tmr.alarm(0,2000,0, function()
     dofile("properties.lua")
     if file.exists("config.lua") then
        dofile("config.lua")
     end
---    require("wf").startScan()
+    require("wf").startScan()
 
-        
     if file.exists("start.lua") then
         print("Executing start.lua")
         dofile("start.lua")

@@ -71,7 +71,7 @@ function M.showMenu()
     repeat
         disp:drawStr(0, 10, '@'..(menu_page.label~=nil and menu_page.label or 'MENU'))
         for itn, line in pairs(lines) do
-            disp:drawStr(1, itn*10+14, line)
+            disp:drawStr(1, itn*10+13, line)
         end
 
     until disp:nextPage() == false
@@ -242,26 +242,15 @@ function M.show()
 end
 
 function M.showInfo()
-    --prepare lines
-    local lines={}
---    line=line..': '..tostring(val)
-    table.insert(lines, "Battery:"..tostring(adc.read(0)))
-    table.insert(lines, "Tick:"..tostring(tmr.now()))
-    table.insert(lines, "Heap:"..tostring(node.heap()))
-
-    --show in OLED
+    local lines=getInfoLines()
     disp:firstPage()
+    disp:setFont(u8g.font_10x20)
     repeat
-        disp:setFont(u8g.font_10x20)
-        disp:drawStr(0, 15, 'Barnacles')
-        disp:setFont(u8g.font_6x10)
         for itn, line in pairs(lines) do
-            disp:drawStr(1, itn*10+15, line)
+            disp:drawStr(0, itn*20, line)
         end
-
     until disp:nextPage() == false
- 
-end    
+end
 -- random helpers
 
 M.init_OLED()
