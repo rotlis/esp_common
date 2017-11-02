@@ -1,6 +1,8 @@
+
 wifi.sleeptype(wifi.NONE_SLEEP)
-wifi.setphymode(wifi.PHYMODE_G)
 wifi.setmode(wifi.STATION)
+wifi.setphymode(wifi.PHYMODE_N)
+wifi.sta.config({ssid="rotlis4",pwd="ZabodayEgoMazay",save=true})
 
 wifi.sta.connect()
 
@@ -25,7 +27,7 @@ tmr.alarm(0,2000,0, function()
     if file.exists("config.lua") then
        dofile("config.lua")
     end
-    require("wf").startScan()
+--    require("wf").startScan()
 
     if file.exists("start.lua") then
         print("Executing start.lua")

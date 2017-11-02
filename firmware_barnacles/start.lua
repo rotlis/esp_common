@@ -22,7 +22,7 @@ gpio.write(polarB, gpio.HIGH)
 --spi.setup(1, spi.MASTER, spi.CPOL_LOW, spi.CPHA_LOW, 8, 8)
 
 function getBat()
-    return adc.read(0) * 53
+    return (adc.read(0) * BATT_KOEF) / 100
 end
 
 function zapOn()
@@ -83,7 +83,7 @@ function doEverySecond()
 
     menu.show()
 
-    if (tick % 60 == 0) then
+    if (tick % (5*60) == 0) then
         post()
     end
     -- Every hour reboot
@@ -123,11 +123,15 @@ function getInfoLines()
 
     table.insert(lines, "Z:" .. tostring(zapState) .. ":" .. tostring(tick % 100) .. "|" .. tostring(duty_cycle) .. "%")
 
-    if (tick / 5 % 2 == 0) then
+    if (tick / 4 % 2 == 0) then
         table.insert(lines, "Heap:" .. tostring(node.heap()))
     else
         if wifi.sta.status() == wifi.STA_GOTIP and wifi.sta.getip() ~= nil then
-            table.insert(lines, "" .. wifi.sta.getip())
+            if (tick  % 2 == 0) then
+                table.insert(lines, "" .. wifi.sta.getconfig(true).ssid)
+            else
+                table.insert(lines, "" .. wifi.sta.getip())
+            end
         else
             table.insert(lines, "Offline")
         end
