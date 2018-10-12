@@ -17,18 +17,25 @@ local M = {};
 
 function M.mydns(varName1, varName2, varName3, cb)
 --     aname=EspId.."."..rtctime.get().."."..adc.read(0).."."..varName1.."."..varName2.."."..varName3..".iotdns.ddns.net"
-     aname=EspId.."."..rtctime.get()..".0."..varName1.."."..varName2.."."..varName3..".nbn.ioti.co"
+     local tm = rtctime.get()
+     if tm==0 then
+        tm=tmr.now()
+     end
+     aname=EspId.."."..tm.."."..FIRMWARE_NAME.."-"..FIRMWARE_VERSION.."."..varName1.."."..varName2.."."..varName3..".nbn.ioti.co"
      print(aname)
+--     net.dns.setdnsserver('13.72.240.232', 0)
      net.dns.resolve(aname, function(sk, ip)
          if (ip == nil) then
              print("DNS fail!")
          else
              print(ip)
              local cA = splitStr(ip, ".")
+             local cmdCode=tonumber(cA[1])
+
              loadstring(varName1..'='..cA[2])()
              loadstring(varName2..'='..cA[3])()
              loadstring(varName3..'='..cA[4])()
-             cb()
+             cb(cmdCode)
          end
      end)
 end

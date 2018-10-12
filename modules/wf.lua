@@ -4,6 +4,7 @@ local known_networks={
     {ssid='Rotlis iPhone',pwd=encoder.fromBase64('VHJ1Ym9yZy03'),auto=true},
     {ssid='rotlis',pwd=encoder.fromBase64('WmFib2RheUVnb01hemF5'),auto=true},
     {ssid='rotlis2',pwd=encoder.fromBase64('WmFib2RheUVnb01hemF5'),auto=true},
+    {ssid='rotlis4',pwd=encoder.fromBase64('WmFib2RheUVnb01hemF5'),auto=true},
     {ssid='hackathon',pwd=encoder.fromBase64('aGFja2F0aG9u'),auto=true},
     {ssid='innovate_guest',pwd=nil,auto=true}
 }

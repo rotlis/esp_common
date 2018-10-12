@@ -1,0 +1,12 @@
+.sameUni{
+    color: darkblue;
+    background-color: lightskyblue;
+}
+.selected{
+    color: red;
+    background-color: lightpink;
+}
+
+.asiButton{
+    width:120px
+}

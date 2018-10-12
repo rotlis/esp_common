@@ -1,0 +1,7 @@
+MQTT_BROKER_IP = "192.168.2.32"
+aNTP = "pool.ntp.org"
+WIFI_SCAN_INTERVAL_MS=60000
+
+FT_MQTT=false
+FT_DNS=true
+FT_UPDATE=true

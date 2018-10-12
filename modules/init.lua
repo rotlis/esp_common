@@ -27,8 +27,11 @@ tmr.alarm(0,2000,0, function()
     end
     require("wf").startScan()
     LOGGER = require("logger")
-    mqttClient = require("mqtt_client")
-    mqttClient.init(MQTT_BROKER_IP)
+
+    if FT_MQTT then
+        mqttClient = require("mqtt_client")
+        mqttClient.init(MQTT_BROKER_IP)
+    end
 
     if file.exists("start.lua") then
         print("Executing start.lua")
