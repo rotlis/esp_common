@@ -25,7 +25,7 @@ tmr.alarm(0,2000,0, function()
     if file.exists("config.lua") then
        dofile("config.lua")
     end
-    require("wf").startScan()
+--    require("wf").startScan()
     LOGGER = require("logger")
 
     if FT_MQTT then

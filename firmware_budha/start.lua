@@ -4,19 +4,19 @@ sound = require("sound")
 light.init()
 sound.init()
 
-mqttClient.setCallback(function(client, topic, message)
-    print("MY HANDLER: MQTT topic:" .. topic .. ", message:" .. message)
-    if message=='alarm' then
-        sound.startAlarm()
-        light.startWhite()
-    elseif message=='relax' then
-        sound.startRelax()
-        light.startRainbow()
-    elseif message=='stop' then
-        sound.stop()
-        light.stop()
-    end
-end)
+--mqttClient.setCallback(function(client, topic, message)
+--    print("MY HANDLER: MQTT topic:" .. topic .. ", message:" .. message)
+--    if message=='alarm' then
+--        sound.startAlarm()
+--        light.startWhite()
+--    elseif message=='relax' then
+--        sound.startRelax()
+--        light.startRainbow()
+--    elseif message=='stop' then
+--        sound.stop()
+--        light.stop()
+--    end
+--end)
 
 function debounce (func)
     local last = 0
@@ -51,4 +51,27 @@ gpio.trig(pin_c, "down", debounce(light.startRainbow))
 gpio.trig(pin_d, "down", debounce(sound.volumeUp))
 gpio.trig(pin_e, "down", debounce(sound.toggleRelax))
 gpio.trig(pin_f, "down", debounce(sound.volumeDown))
+
+
+
+tmr.alarm(0, 10000, 1, function()
+
+    http.get("http://192.168.1.32:1880/buddha_cmd", nil, function(code, data)
+        if (code < 0) then
+            print("HTTP request failed")
+        else
+--            print(code, "'"..data.."'")
+            if string.match(data, 'alarm') then
+                sound.startAlarm()
+                light.startWhite()
+            elseif string.match(data, 'relax') then
+                sound.startRelax()
+                light.startRainbow()
+            elseif string.match(data, 'stop') then
+                sound.stop()
+                light.stop()
+            end
+        end
+    end)
+end)
 
