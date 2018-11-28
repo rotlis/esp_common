@@ -22,21 +22,31 @@ local _play_cb
 -- ****************************************************************************
 -- PCM
 local function stop_stream(cb)
+  print("@1")
   _drv:stop()
+  print("@2")
   if _conn then
-    _conn:close() -- IT MAY CAUSE PROBLEMS
+    print("@3")
+--    _conn:close() -- IT MAY CAUSE PROBLEMS
+    print("@4")
     _conn = nil
+    print("@5")
   end
+  print("@6")
   _buf = nil
   if cb then cb()
   elseif _play_cb then _play_cb()
   end
+  print("@7")
+
   _play_cb = nil
 end
 
 local function cb_drained()
   print("drained "..node.heap())
+  print("before stop_stream")
   stop_stream()
+  print("after stop_stream")
 end
 
 local function cb_data()
