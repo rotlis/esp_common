@@ -6,9 +6,55 @@ interval=0
 mydns = require("mydns")
 
 ws2812.init()
- i, buffer = 0, ws2812.newBuffer(8, 3);
+ i, buffer = 0, ws2812.newBuffer(13, 3);
 
 buffer:fill(128, 128, 128);
+
+
+function debounce (func)
+    local last = 0
+    local delay = 300000 -- 200ms * 1000 as tmr.now() has μs resolution
+
+    return function (...)
+        local now = tmr.now()
+        local delta = now - last
+        if delta < 0 then delta = delta + 2147483647 end; -- proposed because of delta rolling over, https://github.com/hackhitchin/esp8266-co-uk/issues/2
+        if delta < delay then return end;
+
+        last = now
+        return func(...)
+    end
+end
+
+
+
+function send_build_state(state)
+    local tm = rtctime.get()
+    if tm==0 then
+        tm=tmr.now()
+    end
+    aname=EspId..".build."..state.."."..tm..".s.nbn.ioti.co"
+    print(aname)
+    net.dns.resolve(aname, function(sk, ip) print(ip) end)
+end
+
+function func_a()
+    print("a")
+    send_build_state(3)
+end
+
+function func_b()
+    print("b")
+    send_build_state(2)
+end
+
+
+pin_a,pin_b=5,6
+gpio.mode(pin_a, gpio.INT, gpio.PULLUP )
+gpio.mode(pin_b, gpio.INT, gpio.PULLUP )
+
+gpio.trig(pin_a, "down", debounce(func_a))
+gpio.trig(pin_b, "down", debounce(func_b))
 
 local led_tmr = tmr.create()
 led_tmr:register(1000, tmr.ALARM_AUTO, function()
