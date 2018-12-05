@@ -33,7 +33,8 @@ echo $device
 echo $binary
 
 echo python2.7 $BIN_FOLDER/esptool.py -p $device write_flash --flash_mode dio -fs 32m 0x00000 $BIN_FOLDER/$binary
-python2.7 $BIN_FOLDER/esptool.py -p $device write_flash --flash_mode dio -fs 32m 0x00000 $BIN_FOLDER/$binary
+#python2.7 $BIN_FOLDER/esptool.py -p $device write_flash --flash_mode dio -fs 32m 0x00000 $BIN_FOLDER/$binary
+esptool.py -p $device write_flash --flash_mode dio -fs 32m 0x00000 $BIN_FOLDER/$binary
 
 #python esptool.py -p /dev/tty.SLAB_USBtoUART write_flash  --flash_mode dio -fs 32m 0x00000 _nunchuck_ws.bin
 
