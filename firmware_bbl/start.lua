@@ -6,7 +6,7 @@ interval=0
 mydns = require("mydns")
 
 ws2812.init()
- i, buffer = 0, ws2812.newBuffer(13, 3);
+ i, buffer = 0, ws2812.newBuffer(8, 3);
 
 buffer:fill(128, 128, 128);
 
