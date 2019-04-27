@@ -1,0 +1,269 @@
+<html>
+<head>
+    <link rel="stylesheet" href="../public/styles/jquery-ui/themes/base/jquery-ui.css">
+    <script src="../public/javascript/jquery-3.2.1.min.js"></script>
+    <script src="../public/javascript/jquery-ui.js"></script>
+    <script src="../public/javascript/aframe.js"></script>
+    <!--<script src="../public/javascript/aframe-ar.js"></script>-->
+
+    <!--<script src="bower_components/jquery-ui/jquery-ui.min.js"></script>-->
+    <!--<script src="bower_components/handlebars/handlebars.runtime.js"></script>-->
+    <!--<script src="bower_components/handlebars/handlebars.js"></script>-->
+    <!--<script src="bower_components/mathjs/dist/math.js"></script>-->
+
+    <script>
+        //        AFRAME.registerComponent('wireframe', {
+        //            dependencies: ['material'],
+        //            init: function () {
+        //                this.el.components.material.material.wireframe = true;
+        //            }
+        //        });
+
+        //var geo = new THREE.EdgesGeometry( AFRAME.geometries ); // or WireframeGeometry( geometry )
+        //
+        //var mat = new THREE.LineBasicMaterial( { color: 0xffffff, linewidth: 2 } );
+        //
+        //var wireframe = new THREE.LineSegments( geo, mat );
+        //
+        //scene.add( wireframe );
+
+        var el=0;
+        document.onkeypress = function (e) {
+            var key = e.key;
+            if ('.' === key) {
+                el+=1;
+                document.getElementById("gSection").setAttribute("position", "0 "+el+" 0");
+            } else if (',' === key) {
+                el-=1;
+                document.getElementById("gSection").setAttribute("position", "0 "+el+" 0");
+            } else {
+
+                console.debug("k:", key);
+            }
+        };
+
+
+        window.addEventListener("load", initAFrame);
+
+        var mx = 10;
+        var my = 10;
+        var mz = 10;
+
+        var opacity = 1;
+        var boxes = [];
+        var a;
+        var e;
+        var ee;
+        var pov;
+        var t;
+        var rotate = 0;
+        var delta = 1;
+        var pov_pitch = 0;
+        var pov_distance = 10;
+        var wireframe = false;
+
+        var colors = [
+            "#FF0000",
+            "#E2571E",
+            "#FF7F00",
+            "#FFFF00",
+            "#00FF00",
+            "#96bf33",
+            "#0000FF",
+            "#4B0082",
+            "#8B00FF"];
+
+        function initAFrame() {
+
+            a = document.getElementById("a");
+            e = document.getElementById("e");
+            ee = document.getElementById("ee");
+            pov = document.getElementById("pov");
+
+//            a.addEventListener("click", OnClickOnAFrame.bind(true, a));
+            addAll();
+            drawControls();
+            calcPov();
+
+            test();
+        }
+
+        function addBox(x, y, z) {
+            var b = document.createElement("a-box");
+            b.setAttribute("position", {
+                "x": x * 2,
+                "y": y * 2,
+                "z": z * 2
+            });
+            b.setAttribute("wireframe", wireframe);
+            e.appendChild(b);
+            b.setAttribute("color", colors[Math.round(Math.random() * (colors.length - 1))]);
+            b.setAttribute("color", "#" + (x + 1) * 10 + "" + (y + 1) * 10 + "" + (z + 1) * 10);
+            b.setAttribute("opacity", opacity);
+            boxes.push(b);
+        }
+
+        function addSlice() {
+            var b = document.createElement("a-box");
+            b.setAttribute("position", {
+                "x": 2,
+                "y": 3 * 2,
+                "z": 2
+            });
+            e.appendChild(b);
+            b.setAttribute("width", "5");
+            b.setAttribute("height", "1");
+            b.setAttribute("depth", "5");
+            b.setAttribute("color", colors[Math.round(Math.random() * (colors.length - 1))]);
+            b.setAttribute("opacity", opacity);
+            boxes.push(b);
+        }
+
+        function addAll() {
+            for (x = 0; x < mx; x++) {
+                for (y = 0; y < my; y++) {
+                    for (z = 0; z < mz; z++) {
+                        addBox(x, y, z);
+                    }
+                }
+            }
+//            addSlice();
+        }
+
+        function runIt() {
+            rotate += delta;
+            if (rotate % 360 === 0) {
+                rotate = 0;
+//                delta = -delta;
+
+            }
+            ee.setAttribute("rotation", "0 " + rotate + " 0");
+            $(".axis-label").each(function (ndx, el) {
+                el.setAttribute("rotation", "0 " + (-rotate) + " 0");
+            });
+        }
+        //                setInterval(runIt, 40);
+
+
+        function calcPov() {
+            console.debug(pov_pitch, pov_distance);
+            var rad = pov_pitch * 0.017453292519943;
+            var x = pov_distance * Math.sin(rad);
+            var y = pov_distance * Math.cos(rad);
+            pov.setAttribute("position", "0 " + x + " " + y);
+            pov.setAttribute("rotation", (-pov_pitch) + " 0 0");
+        }
+
+        function onSliderDistance(event, ui) {
+            pov_distance = ui.value;
+            calcPov();
+        }
+        function onSliderPitch(event, ui) {
+            pov_pitch = ui.value;
+            calcPov();
+        }
+
+        function onSliderYaw(event, ui) {
+            ee.setAttribute("rotation", "0 " + ui.value + " 0");
+        }
+
+        function drawControls() {
+
+            $("#controls").append("<div class='slider-v' style='float:left' id='pow_distance'></div>");
+            $("#controls").append("<div class='slider-v' style='float:left' id='pow_pitch'></div><br/><br/><br/><br/><br/><br/><br/>");
+            $("#controls").append("<div class='slider-h' id='pow_yaw'></div>");
+            $("#pow_distance").slider({
+                min: 0,
+                max: 40,
+                value: pov_distance,
+                orientation: "vertical",
+                slide: onSliderDistance
+            });
+            $("#pow_pitch").slider({
+                min: -90,
+                max: 90,
+                value: pov_pitch,
+                orientation: "vertical",
+                slide: onSliderPitch
+            });
+
+            $("#pow_yaw").slider({
+                min: 0,
+                max: 360,
+                slide: onSliderYaw
+            });
+        }
+        drawControls();
+
+
+        function test() {
+        }
+    </script>
+    <style>
+        div.slider-h {
+            width: 100px;
+        }
+
+        div.slider-v {
+            height: 100px;
+        }
+    </style>
+</head>
+<body>
+<div style="height: 100%;width:200px;float: left;display: block;background-color:#283e46">
+
+
+    <div id="controls">
+
+    </div>
+</div>
+<div style="float: left">
+    <a-scene id="a">
+
+
+        <a-light type="ambient" color="#fff"></a-light>
+
+        <a-sky color="#101010"></a-sky>
+
+        <!--<a-sphere color="yellow" radius="0.5"></a-sphere>-->
+        <a-entity id="ee" position="0 0 0" rotation="0 0 0">
+
+            <a-entity id="e" position="-2 0 -2" rotation="0 0 0">
+                <a-entity geometry="primitive: plane; height: 10; width: 20; opacity:0.5"
+                          material="side: double;opacity:0.5;color:blue;metalness:0.5"></a-entity>
+                <a-entity geometry="primitive: plane; height: 10; width: 20; opacity:0.5"
+                          material="side: double;opacity:0.5;color:red;metalness:0.5" position="0 0 3"></a-entity>
+                <a-entity id="gSection" geometry="primitive: plane; height: 10; width: 20; opacity:0.5"
+                          material="side: double;opacity:0.5;color:green;metalness:0.5" rotation="-90 0 0"></a-entity>
+                <a-entity geometry="primitive: plane; height: 10; width: 20; opacity:0.5"
+                          material="side: double;opacity:0.5;metalness:0.5" rotation="0 -90 0"></a-entity>
+                <!--origin for all objects-->
+            </a-entity>
+
+            <a-box material="color: red"></a-box>
+            <!--<a-entity geometry="primitive: box" material="color: blue" wireframe></a-entity>-->
+            <!--<a-entity id="lamp" collada-model="url(lamp.dae)"></a-entity>-->
+
+            <a-text class="axis-label" id="t0" value="0" color="#BBB"
+                    position="0 0 0" scale="2 2 2"></a-text>
+            <a-text class="axis-label" id="tx" value="X" color="#BBB"
+                    position="1 1 1" scale="2 2 2"></a-text>
+            <a-text class="axis-label" id="ty" value="Y" color="#BBB"
+                    position="2 2 2" scale="2 2 2"></a-text>
+            <a-text class="axis-label" id="tz" value="Z" color="#BBB"
+                    position="3 3 3" scale="2 2 2"></a-text>
+        </a-entity>
+
+
+        <a-entity id="pov" position="2 5.5 12" rotation="-20 0 0">
+            <a-light type="point" color="white" position="0 0 0"></a-light>
+            <a-camera id="player">
+                <!--<a-cursor></a-cursor>-->
+            </a-camera>
+        </a-entity>
+
+    </a-scene>
+
+</div>
+</body>
+</html>
